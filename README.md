@@ -36,6 +36,7 @@ docs/
 ├── Vision.md
 ├── ProductStrategy.md
 ├── Roadmap.md
+├── Concepts/
 ├── PRD/
 ├── RFC/
 ├── HLD/
@@ -51,6 +52,8 @@ docs/
 - `ProductStrategy`: target users, strategic priorities, positioning, and
   product constraints.
 - `Roadmap`: milestone sequence and maturity path.
+- `Concepts`: educational background for protocols, patterns, and product
+  concepts Kavrynt depends on.
 - `PRD`: product requirements, user journeys, acceptance criteria, goals, and
   non-goals.
 - `RFC`: proposed architecture or product decisions that require review.
@@ -104,3 +107,13 @@ must reference upstream IDs:
 - [MVP PRD](docs/PRD/PRD-0001-Kavrynt-MVP.md)
 - [Documentation Governance RFC](docs/RFC/RFC-0001-Documentation-Governance.md)
 - [MVP System Architecture RFC](docs/RFC/RFC-0002-MVP-System-Architecture.md)
+- [MCP Primer](docs/Concepts/MCP-Primer.md)
+- [kavryctl Component HLD](docs/HLD/HLD-0001-kavryctl-Local-MVP.md)
+- [Kavrynt MVP System HLD](docs/HLD/HLD-0002-Kavrynt-MVP-System-Architecture.md)
+- [Gateway HLD](docs/HLD/HLD-0003-Gateway.md)
+- [Kubernetes Operator HLD](docs/HLD/HLD-0004-Kubernetes-Operator.md)
+- [Registry HLD](docs/HLD/HLD-0005-Registry.md)
+- [kavryctl LLD](docs/LLD/LLD-0001-kavryctl-Local-Registry.md)
+- [Gateway LLD](docs/LLD/LLD-0002-Gateway.md)
+- [Kubernetes Operator LLD](docs/LLD/LLD-0003-Kubernetes-Operator.md)
+- [Registry LLD](docs/LLD/LLD-0004-Registry.md)
