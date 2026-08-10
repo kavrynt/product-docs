@@ -4,7 +4,7 @@ title: Kavrynt Vision
 status: Draft
 owner: Kavrynt Maintainers
 created: 2026-08-08
-updated: 2026-08-08
+updated: 2026-08-11
 reviewers: []
 related:
   - PRD-0001
@@ -82,6 +82,37 @@ MCP Infrastructure
   -> Enterprise AI Control Plane
 ```
 
+## Product Packaging
+
+Kavrynt should use an open-core packaging model: the core infrastructure should
+be available as open-source software, while hosted governance and enterprise
+operations should become commercial product surfaces.
+
+Open-source Kavrynt:
+
+- CLI
+- Registry API
+- Gateway
+- Operator
+- Helm charts
+- local install docs
+
+Commercial Kavrynt:
+
+- hosted control UI
+- hosted registry
+- SSO
+- RBAC
+- audit logs
+- approval workflows
+- policy management
+- usage dashboard
+- enterprise support
+
+The open-source product should make Kavrynt easy to test, adopt, and self-host.
+The commercial product should help organizations operate MCP infrastructure with
+central visibility, governance, security, and support.
+
 ## Non-Goals
 
 At this stage, Kavrynt is not defined as:
@@ -92,7 +123,7 @@ At this stage, Kavrynt is not defined as:
 - A general AI coding assistant.
 - A documentation generator.
 - A marketplace.
-- A hosted commercial SaaS product.
+- A hosted commercial SaaS product in the first MVP.
 
 These directions may be revisited later only through explicit product and
 architecture decisions.
@@ -103,4 +134,5 @@ architecture decisions.
   security/operator stakeholder?
 - What is the first compelling end-to-end workflow?
 - Which parts of the four-component MVP are mandatory for the first release?
-- What should be open-source only versus potentially hosted or commercial later?
+- Which commercial features are required first after the open-source MVP proves
+  the core workflow?

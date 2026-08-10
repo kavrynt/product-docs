@@ -4,7 +4,7 @@ title: Kavrynt Product Strategy
 status: Draft
 owner: Kavrynt Maintainers
 created: 2026-08-08
-updated: 2026-08-08
+updated: 2026-08-11
 reviewers: []
 related:
   - VISION-0001
@@ -92,13 +92,41 @@ These are project foundation assets. They do not define product architecture.
 - Open-source developer experience with a path toward enterprise governance.
 - Kubernetes-friendly without requiring unnecessary cloud-native complexity.
 
+## Open-Source And Commercial Boundary
+
+Open-source Kavrynt should provide the installable infrastructure foundation:
+
+- CLI
+- Registry API
+- Gateway
+- Operator
+- Helm charts
+- local install docs
+
+Commercial Kavrynt should provide hosted and enterprise governance capabilities:
+
+- hosted control UI
+- hosted registry
+- SSO
+- RBAC
+- audit logs
+- approval workflows
+- policy management
+- usage dashboard
+- enterprise support
+
+The commercial product should not be positioned as a workflow builder. It should
+be positioned as the control plane for safe, observable, and governed MCP
+adoption across engineering teams.
+
 ## Strategic Constraints
 
 - Do not expand the MVP into unrelated AI product surfaces.
 - Do not introduce infrastructure unless requirements justify it.
 - Do not treat MCP as the only possible long-term protocol.
 - Do not claim enterprise controls before they are designed and implemented.
-- Do not start implementation before product and architecture docs are reviewed.
+- Do not claim hosted commercial capabilities before the open-source MVP proves
+  the core Registry, Gateway, Operator, and CLI workflow.
 
 ## Success Metrics To Define
 
@@ -117,4 +145,5 @@ These are project foundation assets. They do not define product architecture.
 - Does the MVP require Kubernetes from day one, or should Kubernetes be one
   deployment target?
 - What should the website communicate before the product is ready?
-- What is the open-source/commercial boundary, if any?
+- Which commercial feature should be built first after the MVP: hosted registry,
+  hosted control UI, or policy/audit?
