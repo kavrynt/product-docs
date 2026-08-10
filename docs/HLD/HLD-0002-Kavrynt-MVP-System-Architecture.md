@@ -4,7 +4,7 @@ title: Kavrynt MVP System Architecture
 status: Draft
 owner: Kavrynt Maintainers
 created: 2026-08-08
-updated: 2026-08-08
+updated: 2026-08-10
 reviewers: []
 related:
   - PRD-0001
@@ -70,31 +70,19 @@ servers.
 
 ## System Architecture
 
-```text
-          Developer / Platform Engineer
-                    |
-                    v
-                kavryctl
-                    |
-          +---------+----------+
-          |                    |
-          v                    v
-      Registry           Kubernetes API
-          |                    |
-          |                    v
-          |             Kubernetes Operator
-          |                    |
-          +---------+----------+
-                    |
-                    v
-                 Gateway
-                    |
-                    v
-             MCP Server Workloads
-                    ^
-                    |
-             MCP Hosts / Clients
-```
+![Kavrynt MVP System Architecture](../../diagrams/exported/HLD-0002-System-Architecture.svg)
+
+Editable source: [HLD-0002-System-Architecture.drawio](../../diagrams/source/HLD-0002-System-Architecture.drawio)
+
+The current Kind-tested MVP has two supported control paths:
+
+- `kavryctl` can register MCP server manifests directly with Registry.
+- The Kubernetes Operator can watch `MCPServer` custom resources and sync those
+  records into Registry.
+
+Gateway consumes Registry as the route source of truth and proxies HTTP MCP
+traffic to the registered upstream endpoint. In this MVP, the Operator does not
+deploy MCP server workloads yet; it syncs Kubernetes intent into Registry.
 
 ## Control Plane
 
@@ -133,8 +121,8 @@ Data-plane component:
 | --- | --- | --- | --- |
 | `kavryctl` | CLI for developer/operator workflows | user commands, local validation, status presentation | long-running state, traffic proxying |
 | Registry | Source of truth for MCP server metadata and versions | server records, versions, lifecycle metadata, policy references | Kubernetes reconciliation, runtime traffic |
-| Operator | Kubernetes reconciliation loop | workloads, services, status, Gateway runtime config | product metadata source of truth |
-| Gateway | MCP data-plane access point | routing, request telemetry, future policy enforcement | source-of-truth registry, workload deployment |
+| Operator | Kubernetes reconciliation loop | `MCPServer` CR watch, Registry upsert/delete, finalizer cleanup, status conditions | MCP workload deployment in this MVP, product metadata source of truth |
+| Gateway | MCP data-plane access point | Registry sync, route table, HTTP proxying, request telemetry | source-of-truth registry, workload deployment |
 
 ## Primary Workflow
 
@@ -147,14 +135,14 @@ Developer writes mcp-server.yaml
   -> Registry stores MCP server metadata and version
 ```
 
-### 2. Deploy
+### 2. Kubernetes-native registration
 
 ```text
-kavryctl deploy <server>
-  -> desired state is written to Kubernetes
-  -> Operator reconciles Deployment/Service/GatewayRoute
-  -> Operator writes status
-  -> Registry reflects deployment state
+kubectl apply -f mcpserver.yaml
+  -> Kubernetes API stores MCPServer
+  -> Operator watches MCPServer
+  -> Operator upserts Registry record
+  -> Operator writes Registered=True status
 ```
 
 ### 3. Use
@@ -162,8 +150,9 @@ kavryctl deploy <server>
 ```text
 MCP Host
   -> MCP Client
-  -> Gateway endpoint
-  -> MCP Server workload
+  -> Gateway /mcp/<server-name>
+  -> Gateway route lookup
+  -> registered MCP Server HTTP endpoint
 ```
 
 ### 4. Observe
@@ -179,11 +168,9 @@ kavryctl status <server>
 
 ```text
 kavryctl register new version
-  -> Registry creates new version record
-  -> kavryctl deploy version
-  -> Operator rolls out workload
-  -> Gateway routes to healthy version
-  -> rollback selects prior version if needed
+  -> Registry updates server record
+  -> Gateway syncs updated route table
+  -> future production release adds rollout/rollback semantics
 ```
 
 ## Deployment Topology
@@ -199,16 +186,39 @@ Namespace: kavrynt-system
 Namespace: team/application namespace
   - MCP server workloads
   - Services for MCP workloads
-  - Optional Kavrynt custom resources
+  - MCPServer custom resources
 ```
 
 Local developer topology:
 
 ```text
-kavryctl
-  -> .kavrynt/registry.json
-  -> example MCP manifest validation
+Developer laptop
+  -> Docker Desktop
+  -> Kind cluster
+  -> kubectl port-forward to Gateway and Registry
 ```
+
+## Local MVP Validation Evidence
+
+The MVP flow was validated on a local Kind cluster:
+
+```text
+MCPServer CR
+  -> k8s-operator
+  -> Registry
+  -> Gateway route table
+  -> mock MCP service
+```
+
+Confirmed behavior:
+
+- Registry, Gateway, Operator, and mock MCP workload rolled out successfully.
+- `MCPServer/demo-mcp` reached `Registered=True`.
+- Registry returned the synced `demo-mcp` server record.
+- Gateway returned one route for `demo-mcp`.
+- Gateway proxied `POST /mcp/demo-mcp/tools/list` to the mock MCP service.
+- Deleting the `MCPServer` removed the Registry record and Gateway route after
+  the next sync interval.
 
 ## State Model
 

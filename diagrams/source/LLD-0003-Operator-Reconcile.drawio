@@ -1,0 +1,73 @@
+<mxfile host="app.diagrams.net" modified="2026-08-10T00:00:00.000Z" agent="Codex" version="24.7.17" type="device">
+  <diagram id="lld-0003-operator-reconcile" name="LLD-0003 Operator Reconcile">
+    <mxGraphModel dx="1440" dy="920" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="820" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="title" value="Kubernetes Operator Reconcile Flow" style="text;html=1;fontSize=28;fontStyle=1;strokeColor=none;fillColor=none;fontColor=#111827;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="40" y="30" width="520" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="subtitle" value="LLD-0003: MCPServer CR lifecycle, Registry sync, status, and finalizer cleanup" style="text;html=1;fontSize=14;strokeColor=none;fillColor=none;fontColor=#4b5563;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="40" y="70" width="780" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="actor" value="Developer / CI" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;strokeWidth=2;strokeColor=#0891b2;fillColor=#cffafe;fontColor=#164e63;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="60" y="150" width="170" height="62" as="geometry"/>
+        </mxCell>
+        <mxCell id="apiserver" value="Kubernetes API Server&lt;br&gt;&lt;font style=&quot;font-size: 11px&quot;&gt;MCPServer + status subresource&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;strokeWidth=2;strokeColor=#2563eb;fillColor=#dbeafe;fontColor=#1e3a8a;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="310" y="150" width="230" height="72" as="geometry"/>
+        </mxCell>
+        <mxCell id="controller" value="MCPServerReconciler&lt;br&gt;&lt;font style=&quot;font-size: 11px&quot;&gt;controller-runtime manager&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;strokeWidth=2;strokeColor=#9333ea;fillColor=#f3e8ff;fontColor=#581c87;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="620" y="150" width="230" height="72" as="geometry"/>
+        </mxCell>
+        <mxCell id="registry" value="Kavrynt Registry&lt;br&gt;&lt;font style=&quot;font-size: 11px&quot;&gt;POST/DELETE /v1/servers&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;strokeWidth=2;strokeColor=#0284c7;fillColor=#e0f2fe;fontColor=#075985;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="930" y="150" width="210" height="72" as="geometry"/>
+        </mxCell>
+        <mxCell id="step1" value="1. kubectl apply MCPServer" style="endArrow=block;html=1;rounded=0;strokeWidth=2;strokeColor=#0891b2;fontColor=#164e63;" edge="1" parent="1" source="actor" target="apiserver">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="step2" value="2. watch event" style="endArrow=block;html=1;rounded=0;strokeWidth=2;strokeColor=#2563eb;fontColor=#1d4ed8;" edge="1" parent="1" source="apiserver" target="controller">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="decision" value="Resource deleting?" style="rhombus;whiteSpace=wrap;html=1;strokeWidth=2;strokeColor=#64748b;fillColor=#f8fafc;fontColor=#0f172a;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="640" y="285" width="180" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="create" value="Create / Update path&lt;br&gt;&lt;font style=&quot;font-size: 11px&quot;&gt;ensure finalizer, map CR to Registry manifest&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;strokeWidth=2;strokeColor=#16a34a;fillColor=#dcfce7;fontColor=#14532d;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="390" y="455" width="260" height="78" as="geometry"/>
+        </mxCell>
+        <mxCell id="delete" value="Delete path&lt;br&gt;&lt;font style=&quot;font-size: 11px&quot;&gt;delete Registry record, remove finalizer&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;strokeWidth=2;strokeColor=#dc2626;fillColor=#fee2e2;fontColor=#7f1d1d;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="790" y="455" width="260" height="78" as="geometry"/>
+        </mxCell>
+        <mxCell id="upsert" value="POST /v1/servers" style="endArrow=block;html=1;rounded=0;strokeWidth=2;strokeColor=#0284c7;fontColor=#075985;" edge="1" parent="1" source="create" target="registry">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="deleteCall" value="DELETE /v1/servers/{name}" style="endArrow=block;html=1;rounded=0;strokeWidth=2;strokeColor=#dc2626;fontColor=#7f1d1d;" edge="1" parent="1" source="delete" target="registry">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="d1" value="no" style="endArrow=block;html=1;rounded=0;strokeWidth=2;strokeColor=#16a34a;fontColor=#14532d;" edge="1" parent="1" source="decision" target="create">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="d2" value="yes" style="endArrow=block;html=1;rounded=0;strokeWidth=2;strokeColor=#dc2626;fontColor=#7f1d1d;" edge="1" parent="1" source="decision" target="delete">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="status-ok" value="Status update&lt;br&gt;&lt;font style=&quot;font-size: 11px&quot;&gt;Registered=True, registrySyncedAt&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;strokeWidth=2;strokeColor=#22c55e;fillColor=#f0fdf4;fontColor=#14532d;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="390" y="620" width="260" height="74" as="geometry"/>
+        </mxCell>
+        <mxCell id="status-fail" value="Failure status&lt;br&gt;&lt;font style=&quot;font-size: 11px&quot;&gt;Registered=False, registryError, requeue&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;strokeWidth=2;strokeColor=#f59e0b;fillColor=#fffbeb;fontColor=#92400e;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="790" y="620" width="260" height="74" as="geometry"/>
+        </mxCell>
+        <mxCell id="statusEdge" value="update status" style="endArrow=block;html=1;rounded=0;strokeWidth=2;strokeColor=#22c55e;fontColor=#14532d;" edge="1" parent="1" source="status-ok" target="apiserver">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="failEdge" value="on error" style="endArrow=block;html=1;rounded=0;strokeWidth=2;dashed=1;strokeColor=#f59e0b;fontColor=#92400e;" edge="1" parent="1" source="registry" target="status-fail">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="okEdge" value="on success" style="endArrow=block;html=1;rounded=0;strokeWidth=2;strokeColor=#22c55e;fontColor=#14532d;" edge="1" parent="1" source="registry" target="status-ok">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="failStatusEdge" value="update status" style="endArrow=block;html=1;rounded=0;strokeWidth=2;dashed=1;strokeColor=#f59e0b;fontColor=#92400e;" edge="1" parent="1" source="status-fail" target="apiserver">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

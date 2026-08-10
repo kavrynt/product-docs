@@ -4,7 +4,7 @@ title: Kubernetes Operator Low-Level Design
 status: Draft
 owner: Kavrynt Maintainers
 created: 2026-08-08
-updated: 2026-08-08
+updated: 2026-08-10
 reviewers: []
 related:
   - HLD-0002
@@ -15,69 +15,98 @@ related:
 
 ## Summary
 
-The Operator is a Kubernetes controller that reconciles Kavrynt custom
-resources into Deployments, Services, Gateway route configuration, and status
-conditions.
+The Operator is a Kubernetes controller that reconciles `MCPServer` custom
+resources into Kavrynt Registry records.
+
+In the current MVP, the Operator does not create MCP server Deployments,
+Services, or Gateway route objects. It gives Kubernetes users a native control
+path for declaring MCP server metadata, while Registry remains the route source
+of truth consumed by Gateway.
+
+## Reconcile Diagram
+
+![Kubernetes Operator Reconcile Flow](../../diagrams/exported/LLD-0003-Operator-Reconcile.svg)
+
+Editable source: [LLD-0003-Operator-Reconcile.drawio](../../diagrams/source/LLD-0003-Operator-Reconcile.drawio)
 
 ## Runtime Modules
 
 ```text
 operator/
-  cmd/operator
+  main.go
   api/v1alpha1
-  internal/controller/mcpserver
-  internal/render
-  internal/status
-  internal/gatewayconfig
-  internal/metrics
+  internal/controller
+  internal/registry
+  internal/build
+  charts/k8s-operator
+  config/crd
+  config/rbac
+  config/manager
 ```
 
-## Candidate CRD: MCPServer
+## CRD: MCPServer
 
-Proposed spec:
+Implemented spec:
 
-- name,
-- image or endpoint,
-- transport,
-- version,
-- port,
-- env references,
-- resource requirements,
-- policy reference,
-- gateway exposure settings.
+- `spec.version`
+- `spec.transport`
+- `spec.endpoint` for HTTP MCP servers
+- `spec.command` and `spec.args` for future stdio support
+- `spec.environment`
 
-Proposed status:
+Implemented status:
 
 - observed generation,
-- phase,
 - conditions,
-- selected version,
-- workload name,
-- service name,
-- gateway route name,
-- last error.
+- `registrySyncedAt`,
+- `registryError`.
+
+Primary condition:
+
+- `Registered`
 
 ## Reconciliation Flow
 
 ```text
 watch MCPServer
-  -> validate spec
-  -> render Deployment
-  -> render Service
-  -> render Gateway route/config
-  -> apply resources
-  -> update status conditions
-  -> emit event on failure
+  -> add registry-sync finalizer
+  -> map MCPServer spec to Registry manifest
+  -> POST /v1/servers
+  -> update status Registered=True
+```
+
+Delete flow:
+
+```text
+MCPServer deletionTimestamp set
+  -> Operator sees finalizer
+  -> DELETE /v1/servers/{name}
+  -> remove finalizer
+  -> Kubernetes deletes MCPServer
+```
+
+Failure flow:
+
+```text
+Registry unavailable or rejects request
+  -> update status Registered=False
+  -> write registryError
+  -> requeue after retry interval
 ```
 
 ## Status Conditions
 
-Proposed:
+Implemented:
+
+- `Registered=True`: Registry sync succeeded.
+- `Registered=False`: Registry sync failed and `registryError` explains why.
+
+Future conditions:
 
 - `Accepted`
 - `WorkloadReady`
 - `ServiceReady`
-- `GatewayRouteReady`
+- `GatewayReachable`
 - `Degraded`
 
 ## RBAC Scope
@@ -85,33 +114,45 @@ Proposed:
 Operator should access only:
 
 - Kavrynt CRDs,
-- Deployments it owns,
-- Services it owns,
-- ConfigMaps or route resources it owns,
-- Events,
-- status subresources.
+- `mcpservers/status`,
+- `mcpservers/finalizers`,
+- `coordination.k8s.io/leases` for leader election.
+
+The current MVP does not need Deployment, Service, ConfigMap, Secret, or Gateway
+API write permissions.
 
 ## Failure Handling
 
 Failures should be visible through:
 
 - status conditions,
-- Kubernetes events,
 - operator logs,
-- metrics.
+- retry through controller-runtime requeue.
 
 ## Tests
 
 - CRD validation tests,
 - reconcile create/update/delete tests,
-- owner reference tests,
 - status condition tests,
 - RBAC manifest review,
 - Helm/kustomize render tests.
 
+Implemented local checks:
+
+- fake Kubernetes client reconcile test,
+- fake Registry HTTP transport tests,
+- `go test ./...`,
+- `go vet ./...`,
+- `helm lint charts/k8s-operator`,
+- `helm template k8s-operator charts/k8s-operator`,
+- `kubectl kustomize config`,
+- Docker image build and help smoke test.
+
 ## Open Questions
 
-- Which CRDs ship first?
-- Should Operator call Registry API or rely only on Kubernetes resources?
-- How does Operator publish observed status back to Registry?
-- Is Gateway config a ConfigMap, CRD, or Gateway API resource?
+- Should the Operator eventually deploy MCP server workloads, or remain a
+  Registry sync controller?
+- Should Registry authentication be configured through Secret references?
+- Should Gateway config remain Registry-poll based, or move to Kubernetes-native
+  route resources later?
+- What is the first production-grade status model beyond `Registered`?

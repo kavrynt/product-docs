@@ -1,0 +1,76 @@
+<mxfile host="app.diagrams.net" modified="2026-08-10T00:00:00.000Z" agent="Codex" version="24.7.17" type="device">
+  <diagram id="hld-0002-system-architecture" name="HLD-0002 System Architecture">
+    <mxGraphModel dx="1580" dy="980" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1320" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="title" value="Kavrynt MVP System Architecture" style="text;html=1;fontSize=28;fontStyle=1;strokeColor=none;fillColor=none;fontColor=#111827;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="40" y="30" width="500" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="subtitle" value="Kind-tested flow: MCPServer CR -&gt; Operator -&gt; Registry -&gt; Gateway -&gt; MCP workload" style="text;html=1;fontSize=14;strokeColor=none;fillColor=none;fontColor=#4b5563;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="40" y="70" width="780" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="laptop-zone" value="Developer laptop" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;strokeWidth=2;strokeColor=#cbd5e1;fillColor=#f8fafc;fontStyle=1;fontColor=#0f172a;align=left;verticalAlign=top;spacing=14;" vertex="1" parent="1">
+          <mxGeometry x="40" y="130" width="250" height="260" as="geometry"/>
+        </mxCell>
+        <mxCell id="cluster-zone" value="Kind / Kubernetes cluster" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;strokeWidth=2;strokeColor=#94a3b8;fillColor=#f1f5f9;fontStyle=1;fontColor=#0f172a;align=left;verticalAlign=top;spacing=14;" vertex="1" parent="1">
+          <mxGeometry x="330" y="120" width="850" height="560" as="geometry"/>
+        </mxCell>
+        <mxCell id="system-ns" value="Namespace: kavrynt-system" style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;strokeWidth=1;strokeColor=#60a5fa;fillColor=#eff6ff;fontStyle=1;fontColor=#1e3a8a;align=left;verticalAlign=top;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="370" y="170" width="500" height="430" as="geometry"/>
+        </mxCell>
+        <mxCell id="default-ns" value="Namespace: application/default" style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;strokeWidth=1;strokeColor=#34d399;fillColor=#ecfdf5;fontStyle=1;fontColor=#064e3b;align=left;verticalAlign=top;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="900" y="170" width="240" height="430" as="geometry"/>
+        </mxCell>
+        <mxCell id="kavryctl" value="kavryctl&lt;br&gt;&lt;font style=&quot;font-size: 11px&quot;&gt;CLI install, validate, register&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;strokeWidth=2;strokeColor=#0891b2;fillColor=#cffafe;fontColor=#164e63;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="75" y="195" width="180" height="72" as="geometry"/>
+        </mxCell>
+        <mxCell id="ai-client" value="AI client / MCP host&lt;br&gt;&lt;font style=&quot;font-size: 11px&quot;&gt;Calls Gateway endpoint&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;strokeWidth=2;strokeColor=#7c3aed;fillColor=#ede9fe;fontColor=#4c1d95;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="75" y="295" width="180" height="72" as="geometry"/>
+        </mxCell>
+        <mxCell id="operator" value="Kubernetes Operator&lt;br&gt;&lt;font style=&quot;font-size: 11px&quot;&gt;Watches MCPServer CRs&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;strokeWidth=2;strokeColor=#2563eb;fillColor=#dbeafe;fontColor=#1e3a8a;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="410" y="245" width="190" height="76" as="geometry"/>
+        </mxCell>
+        <mxCell id="registry" value="Registry&lt;br&gt;&lt;font style=&quot;font-size: 11px&quot;&gt;Source of truth: /v1/servers&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;strokeWidth=2;strokeColor=#0284c7;fillColor=#e0f2fe;fontColor=#075985;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="640" y="245" width="190" height="76" as="geometry"/>
+        </mxCell>
+        <mxCell id="gateway" value="Gateway&lt;br&gt;&lt;font style=&quot;font-size: 11px&quot;&gt;Route table + HTTP proxy&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;strokeWidth=2;strokeColor=#9333ea;fillColor=#f3e8ff;fontColor=#581c87;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="640" y="405" width="190" height="76" as="geometry"/>
+        </mxCell>
+        <mxCell id="mcp-cr" value="MCPServer CR&lt;br&gt;&lt;font style=&quot;font-size: 11px&quot;&gt;kavrynt.io/v1alpha1&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;strokeWidth=2;strokeColor=#059669;fillColor=#d1fae5;fontColor=#065f46;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="925" y="245" width="190" height="76" as="geometry"/>
+        </mxCell>
+        <mxCell id="mcp-workload" value="MCP server workload&lt;br&gt;&lt;font style=&quot;font-size: 11px&quot;&gt;HTTP upstream service&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;strokeWidth=2;strokeColor=#16a34a;fillColor=#dcfce7;fontColor=#14532d;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="925" y="405" width="190" height="76" as="geometry"/>
+        </mxCell>
+        <mxCell id="pf" value="kubectl port-forward&lt;br&gt;&lt;font style=&quot;font-size: 11px&quot;&gt;local developer access&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;strokeWidth=1;strokeColor=#f59e0b;fillColor=#fffbeb;fontColor=#92400e;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="430" y="510" width="190" height="62" as="geometry"/>
+        </mxCell>
+        <mxCell id="e1" value="apply CR" style="endArrow=block;html=1;rounded=0;strokeWidth=2;strokeColor=#059669;fontColor=#065f46;" edge="1" parent="1" source="kavryctl" target="mcp-cr">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e2" value="watch" style="endArrow=block;html=1;rounded=0;strokeWidth=2;strokeColor=#2563eb;fontColor=#1d4ed8;" edge="1" parent="1" source="mcp-cr" target="operator">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e3" value="POST /v1/servers" style="endArrow=block;html=1;rounded=0;strokeWidth=2;strokeColor=#0284c7;fontColor=#075985;" edge="1" parent="1" source="operator" target="registry">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e4" value="sync routes" style="endArrow=block;html=1;rounded=0;strokeWidth=2;strokeColor=#9333ea;fontColor=#581c87;" edge="1" parent="1" source="registry" target="gateway">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e5" value="/mcp/&lt;name&gt;" style="endArrow=block;html=1;rounded=0;strokeWidth=2;strokeColor=#7c3aed;fontColor=#4c1d95;" edge="1" parent="1" source="ai-client" target="gateway">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e6" value="proxy HTTP" style="endArrow=block;html=1;rounded=0;strokeWidth=2;strokeColor=#16a34a;fontColor=#14532d;" edge="1" parent="1" source="gateway" target="mcp-workload">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e7" value="test access" style="endArrow=block;html=1;rounded=0;strokeWidth=1;dashed=1;strokeColor=#f59e0b;fontColor=#92400e;" edge="1" parent="1" source="kavryctl" target="pf">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="notes" value="Validated locally on Kind: Registry, Gateway, Operator, and mock MCP workload rolled out successfully; Operator set Registered=True; Gateway routed POST /mcp/demo-mcp/tools/list to the mock service." style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;strokeWidth=1;strokeColor=#cbd5e1;fillColor=#ffffff;fontColor=#334155;align=left;verticalAlign=top;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="720" width="1140" height="80" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

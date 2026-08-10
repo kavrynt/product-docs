@@ -44,6 +44,10 @@ docs/
 ├── API/
 ├── ADR/
 └── Templates/
+
+diagrams/
+├── source/
+└── exported/
 ```
 
 ## Document Categories
@@ -62,6 +66,8 @@ docs/
 - `API`: CLI, service, event, schema, CRD, and configuration contracts.
 - `ADR`: durable records of approved decisions.
 - `Templates`: required structure for repeatable documentation.
+- `diagrams/source`: editable draw.io / diagrams.net architecture diagrams.
+- `diagrams/exported`: rendered SVG diagrams embedded in HLD and LLD docs.
 
 ## Status Model
 
