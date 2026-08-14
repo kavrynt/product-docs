@@ -4,7 +4,7 @@ title: Kavrynt MVP
 status: Draft
 owner: Kavrynt Maintainers
 created: 2026-08-08
-updated: 2026-08-08
+updated: 2026-08-14
 reviewers: []
 related:
   - VISION-0001
@@ -50,6 +50,8 @@ Kavrynt should provide a coherent operational model around these workloads.
 - Keep security, observability, and lifecycle management in scope from the
   beginning.
 - Avoid broad AI assistant, marketplace, or hosted SaaS scope in the MVP.
+- Provide a developer-installable public alpha path with `kavryctl`, container
+  images, Helm charts, and local Kubernetes validation.
 
 ## Non-Goals
 
@@ -112,6 +114,8 @@ smaller and should be selected during architecture review.
 | REQ-MVP-010 | Kavrynt must expose health and basic operational signals. | Must | Draft |
 | REQ-MVP-011 | Kavrynt must support a documented local validation path. | Must | Draft |
 | REQ-MVP-012 | Kavrynt must document which runtime environments are supported by the MVP. | Must | Draft |
+| REQ-MVP-013 | Kavrynt must provide a repeatable developer install path for `kavryctl` binaries. | Must | Draft |
+| REQ-MVP-014 | Kavrynt must provide a Kubernetes control-plane install path through Helm. | Must | Draft |
 
 ## Non-Functional Requirements
 
@@ -124,6 +128,7 @@ smaller and should be selected during architecture review.
 | NFR-MVP-005 | Kubernetes constructs should be used only where justified. | Must | Draft |
 | NFR-MVP-006 | The first MVP workflow must be testable locally. | Must | Draft |
 | NFR-MVP-007 | The design must support future extensibility without premature abstraction. | Should | Draft |
+| NFR-MVP-008 | Public release artifacts must include basic supply-chain hygiene: checksums, CI validation, and explicit versions. | Must | Draft |
 
 ## Candidate MVP Components
 
@@ -137,6 +142,27 @@ The following are working components, not approved architecture:
 The MVP architecture RFC must validate whether each component is required for
 the first implementation slice.
 
+## Current MVP Implementation Baseline
+
+As of 2026-08-14, the first public implementation baseline is a monorepo with
+four Go components and one umbrella Helm chart:
+
+- `cmd/kavryctl`: validates manifests and registers, lists, inspects, and
+  unregisters MCP server records through Registry.
+- `services/registry`: stores MCP server manifests and exposes Registry API
+  endpoints.
+- `services/gateway`: reads Registry state and proxies HTTP MCP traffic to
+  registered upstream endpoints.
+- `operator`: watches `MCPServer` custom resources and syncs them into
+  Registry.
+- `charts/kavrynt`: installs Registry, Gateway, and Operator into the
+  `kavrynt-system` namespace.
+
+The current baseline proves registration, route discovery, Gateway proxying,
+and Kubernetes-native Registry sync. It does not yet provide authentication,
+authorization, policy enforcement, audit logs, hosted control UI, or managed
+commercial control-plane services.
+
 ## Acceptance Criteria
 
 - A maintainer can explain the MVP problem, users, goals, and non-goals.
@@ -145,6 +171,10 @@ the first implementation slice.
 - Security questions are documented before implementation.
 - The first implementable workflow is selected and scoped.
 - A future implementation can be tested locally with documented commands.
+- A developer can install or build `kavryctl`, install the control plane with
+  Helm, register a sample MCP server, and route traffic through Gateway.
+- Release automation can publish `kavryctl` binaries and a packaged Helm chart
+  after a tagged release.
 
 ## Risks
 

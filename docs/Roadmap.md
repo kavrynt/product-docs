@@ -4,7 +4,7 @@ title: Kavrynt Roadmap
 status: Draft
 owner: Kavrynt Maintainers
 created: 2026-08-08
-updated: 2026-08-08
+updated: 2026-08-14
 reviewers: []
 related:
   - VISION-0001
@@ -18,7 +18,7 @@ This roadmap is a planning document, not an implementation commitment.
 
 ## M001 - Product and Architecture Foundation
 
-Status: Draft
+Status: In Progress
 
 Outcome:
 
@@ -28,12 +28,13 @@ Outcome:
 - Documentation governance RFC is reviewed.
 - MVP system architecture RFC is drafted and reviewed.
 - Major product and architecture questions are tracked.
-- Implementation is still blocked until the necessary design documents are
-  approved.
+- Implementation has started in the public monorepo.
+- Remaining foundation work is to reconcile API contracts, security review, and
+  release compatibility with the implemented MVP baseline.
 
 ## M002 - First Implementable MVP Slice
 
-Status: Not Started
+Status: In Progress
 
 Outcome:
 
@@ -41,6 +42,10 @@ Outcome:
 - Relevant HLD, LLD, API/contract, and security review documents exist.
 - Implementation repository is selected.
 - Tests and validation plan are defined before coding.
+- `kavryctl`, Registry, Gateway, Operator, and umbrella Helm chart exist in the
+  public monorepo.
+- CI validates Go checks, Docker builds, vulnerability scanning, and Helm
+  rendering.
 
 Candidate workflow:
 
@@ -84,6 +89,19 @@ Outcome:
 - Operational runbooks exist.
 - Failure and recovery workflows are tested.
 - Release and compatibility process is defined.
+
+## M006 - Public Alpha Distribution
+
+Status: In Progress
+
+Outcome:
+
+- `kavryctl` is published as Linux, macOS, and Windows release binaries.
+- CLI installer verifies checksums before installation.
+- Registry, Gateway, and Operator images are published with versioned tags.
+- The `charts/kavrynt` umbrella chart is published as an OCI Helm chart.
+- Website quickstart points to the current install path and clearly separates
+  current source-based testing from tagged-release installation.
 
 ## Future Direction
 

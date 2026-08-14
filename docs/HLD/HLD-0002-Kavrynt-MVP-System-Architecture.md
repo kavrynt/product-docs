@@ -4,7 +4,7 @@ title: Kavrynt MVP System Architecture
 status: Draft
 owner: Kavrynt Maintainers
 created: 2026-08-08
-updated: 2026-08-10
+updated: 2026-08-14
 reviewers: []
 related:
   - PRD-0001
@@ -83,6 +83,40 @@ The current Kind-tested MVP has two supported control paths:
 Gateway consumes Registry as the route source of truth and proxies HTTP MCP
 traffic to the registered upstream endpoint. In this MVP, the Operator does not
 deploy MCP server workloads yet; it syncs Kubernetes intent into Registry.
+
+## Public Alpha Delivery Architecture
+
+Kavrynt should be usable by a developer without cloning every component
+repository separately. The public alpha delivery model is:
+
+```text
+GitHub Releases
+  -> kavryctl binaries and checksums
+
+Docker Hub
+  -> kavrynt/registry
+  -> kavrynt/gateway
+  -> kavrynt/k8s-operator
+
+Helm
+  -> charts/kavrynt source chart today
+  -> oci://ghcr.io/kavrynt/charts/kavrynt after tagged release
+```
+
+Developer install flow:
+
+```text
+curl -fsSL https://kavrynt.com/install.sh | sh
+  -> installs kavryctl
+
+helm upgrade --install kavrynt charts/kavrynt
+  -> creates kavrynt-system namespace
+  -> runs Registry, Gateway, and Operator
+```
+
+The source checkout is still required for the Helm chart until the first tagged
+chart release is published. After that, developers should be able to install the
+control plane directly from the OCI Helm chart.
 
 ## Control Plane
 
@@ -198,6 +232,16 @@ Developer laptop
   -> kubectl port-forward to Gateway and Registry
 ```
 
+Distribution topology:
+
+```text
+Developer laptop
+  -> kavryctl
+  -> kubectl / Helm
+  -> Kind or any Kubernetes cluster
+  -> kavrynt-system namespace
+```
+
 ## Local MVP Validation Evidence
 
 The MVP flow was validated on a local Kind cluster:
@@ -219,6 +263,16 @@ Confirmed behavior:
 - Gateway proxied `POST /mcp/demo-mcp/tools/list` to the mock MCP service.
 - Deleting the `MCPServer` removed the Registry record and Gateway route after
   the next sync interval.
+
+Current implementation status:
+
+- Public monorepo exists at `kavrynt/kavrynt`.
+- CI runs Go tests, `go vet`, Docker builds, vulnerability scanning, Helm lint,
+  and Helm template rendering.
+- Release automation exists for `kavryctl` binaries and the umbrella Helm chart.
+- Runtime images are published on Docker Hub under the `kavrynt` organization.
+- The next release hardening work is versioned image publishing, multi-arch
+  images, pinned image digests, OCI labels, and signed/attested artifacts.
 
 ## State Model
 
@@ -270,7 +324,8 @@ MVP security decisions still required:
 - policy binding model,
 - audit event schema,
 - secret storage,
-- Gateway TLS and identity model.
+- Gateway TLS and identity model,
+- release signing and artifact provenance model.
 
 ## Observability
 

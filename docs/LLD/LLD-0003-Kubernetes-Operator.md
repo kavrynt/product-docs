@@ -4,7 +4,7 @@ title: Kubernetes Operator Low-Level Design
 status: Draft
 owner: Kavrynt Maintainers
 created: 2026-08-08
-updated: 2026-08-10
+updated: 2026-08-14
 reviewers: []
 related:
   - HLD-0002
@@ -143,10 +143,26 @@ Implemented local checks:
 - fake Registry HTTP transport tests,
 - `go test ./...`,
 - `go vet ./...`,
-- `helm lint charts/k8s-operator`,
-- `helm template k8s-operator charts/k8s-operator`,
+- `helm lint operator/charts/k8s-operator`,
+- `helm template k8s-operator operator/charts/k8s-operator`,
+- `helm lint charts/kavrynt`,
+- `helm template kavrynt charts/kavrynt`,
 - `kubectl kustomize config`,
 - Docker image build and help smoke test.
+
+## Helm Integration
+
+The Operator can still be validated through its component chart, but developer
+installs should use the umbrella chart at `charts/kavrynt`. The umbrella chart
+installs Registry, Gateway, and Operator together into `kavrynt-system`, with
+the Operator configured to sync `MCPServer` resources to the in-cluster Registry
+service.
+
+Default MVP Registry URL:
+
+```text
+http://kavrynt-registry.kavrynt-system.svc.cluster.local:8080
+```
 
 ## Open Questions
 

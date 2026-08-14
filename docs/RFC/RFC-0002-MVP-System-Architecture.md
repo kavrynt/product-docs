@@ -4,7 +4,7 @@ title: MVP System Architecture
 status: Draft
 owner: Kavrynt Maintainers
 created: 2026-08-08
-updated: 2026-08-08
+updated: 2026-08-14
 reviewers: []
 related:
   - PRD-0001
@@ -14,17 +14,18 @@ related:
 
 ## Summary
 
-This RFC proposes a working MVP architecture for Kavrynt based on four
-candidate components:
+This RFC proposes the working MVP architecture for Kavrynt based on four
+components:
 
 - kavryctl
 - Gateway
 - Kubernetes Operator
 - Registry
 
-The proposal is intentionally draft. It exists to validate component
-boundaries, identify open questions, and determine the smallest implementable
-slice that satisfies `PRD-0001`.
+The proposal remains draft, but the first implementation baseline now exists in
+the public `kavrynt/kavrynt` monorepo. This RFC should be read as the
+architecture intent that the current HLDs, LLDs, Helm chart, and release
+automation must converge toward.
 
 ## Context
 
@@ -63,8 +64,8 @@ implementation. It proposes architectural boundaries for review.
 - Choosing implementation languages.
 - Choosing a persistence database.
 - Approving Kubernetes CRDs.
-- Defining a hosted cloud product.
-- Starting implementation.
+- Defining the hosted commercial product.
+- Finalizing enterprise governance controls.
 
 ## Requirements Traceability
 
@@ -82,6 +83,8 @@ implementation. It proposes architectural boundaries for review.
 | REQ-MVP-010 | Gateway, Registry, Operator health and telemetry |
 | REQ-MVP-011 | Local validation topology |
 | REQ-MVP-012 | Runtime environment boundaries |
+| REQ-MVP-013 | GitHub Releases binary distribution and installer behavior |
+| REQ-MVP-014 | Helm chart installation model and Kubernetes namespace layout |
 
 ## Proposed Component Model
 
@@ -103,6 +106,29 @@ Developer / Operator
 
 This diagram is conceptual. Actual request flow, persistence, authentication,
 and deployment topology require HLD and contract documents.
+
+## Public Alpha Distribution Model
+
+The MVP should be distributed like Kubernetes-native platform software:
+
+```text
+Developer laptop
+  -> install kavryctl from GitHub Releases
+  -> install Kavrynt control plane with Helm
+  -> Registry, Gateway, and Operator run in kavrynt-system
+  -> MCPServer resources declare routeable MCP endpoints
+  -> Gateway exposes stable HTTP access to MCP clients
+```
+
+Current artifact ownership:
+
+| Artifact | Source | Distribution |
+| --- | --- | --- |
+| `kavryctl` | `cmd/kavryctl` | GitHub Releases binaries with checksums |
+| Registry image | `services/registry` | Docker Hub `kavrynt/registry` |
+| Gateway image | `services/gateway` | Docker Hub `kavrynt/gateway` |
+| Operator image | `operator` | Docker Hub `kavrynt/k8s-operator` |
+| Umbrella chart | `charts/kavrynt` | Source checkout today; GHCR OCI chart on tagged release |
 
 ## Component Responsibilities
 
@@ -168,7 +194,10 @@ Drawbacks:
 
 - Requires careful boundary design to avoid two incompatible models.
 
-Current proposal: evaluate Option C for the first implementable slice.
+Current decision for public alpha: use Option C. The first working path is a
+local developer flow with a Kubernetes install path. Developers can test the
+control plane on Kind using Helm and Docker Hub images, while `kavryctl` remains
+available as the developer SDK/CLI.
 
 ## Security Considerations
 
@@ -182,6 +211,7 @@ Security model is not approved yet. The architecture must define:
 - Audit events.
 - Kubernetes RBAC and service accounts if Kubernetes is used.
 - Supply-chain and container image expectations.
+- Release artifact integrity for CLI binaries, charts, and images.
 
 No implementation should claim these controls until they are designed and
 verified.
@@ -216,17 +246,20 @@ acceptable for the first implementation.
 
 ## Required Follow-Up Documents
 
-- `HLD-0001-System-Architecture.md`
-- `HLD-0002-Registry.md`
+- `HLD-0001-kavryctl-Local-MVP.md`
+- `HLD-0002-Kavrynt-MVP-System-Architecture.md`
 - `HLD-0003-Gateway.md`
-- `HLD-0004-kavryctl.md`
-- `HLD-0005-Kubernetes-Operator.md` if Operator remains in MVP scope.
+- `HLD-0004-Kubernetes-Operator.md`
+- `HLD-0005-Registry.md`
 - `API-0001-kavryctl-CLI-Contract.md`
 - `API-0002-Registry-Contract.md`
 - `API-0003-Gateway-Contract.md`
+- `API-0004-MCPServer-CRD-Contract.md`
 - Security review for the approved MVP slice.
 
-These should be created only after this RFC is reviewed.
+The HLD and LLD documents now exist in draft form. API contracts, security
+review, and release hardening documents remain required before production
+claims.
 
 ## Alternatives Considered
 
@@ -239,21 +272,18 @@ These should be created only after this RFC is reviewed.
 
 ## Proposed Next Step
 
-Select the first implementable slice:
+Harden the first public alpha slice:
 
 ```text
-kavryctl register
-  -> Registry stores MCP server metadata
-  -> Gateway exposes controlled access
-  -> health/status is observable
+kavryctl install
+  -> Helm installs Registry, Gateway, and Operator
+  -> MCPServer custom resource syncs into Registry
+  -> Gateway exposes controlled HTTP MCP access
+  -> docs show smoke checks and cleanup
 ```
 
-Then decide whether deployment is:
-
-- local process based,
-- Docker based,
-- Kubernetes based,
-- or deferred until the next slice.
+The next design decisions should cover API contracts, security baseline, and
+release compatibility before adding hosted UI or enterprise governance.
 
 ## Open Questions
 
