@@ -1,0 +1,61 @@
+site_name: Kavrynt Docs
+site_url: https://docs.kavrynt.com
+site_description: Documentation for Kavrynt, a Kubernetes-native MCP control plane.
+repo_name: kavrynt/product-docs
+repo_url: https://github.com/kavrynt/product-docs
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  language: en
+  features:
+    - navigation.sections
+    - navigation.instant
+    - navigation.top
+    - content.code.copy
+    - content.action.edit
+    - search.suggest
+    - search.highlight
+  palette:
+    - scheme: slate
+      primary: deep orange
+      accent: orange
+  font:
+    text: Inter
+    code: Roboto Mono
+
+extra_css:
+  - assets/stylesheets/extra.css
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.tabbed:
+      alternate_style: true
+  - toc:
+      permalink: true
+
+nav:
+  - Home: index.md
+  - Overview: overview.md
+  - Installation:
+      - Install Kavrynt: installation.md
+      - Quickstart: quickstart.md
+  - Architecture:
+      - System Architecture: architecture.md
+      - MCP Concepts: concepts/mcp.md
+  - Components:
+      - kavryctl: components/kavryctl.md
+      - Registry: components/registry.md
+      - Gateway: components/gateway.md
+      - Operator: components/operator.md
+  - Reference:
+      - kavryctl CLI: reference/kavryctl.md
+      - Troubleshooting: troubleshooting.md
+      - Release Notes: release-notes.md
+
