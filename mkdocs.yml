@@ -1,12 +1,9 @@
 site_name: Kavrynt Docs
 site_url: https://docs.kavrynt.com
 site_description: Documentation for Kavrynt, a Kubernetes-native MCP control plane.
-repo_name: kavrynt/product-docs
-repo_url: https://github.com/kavrynt/product-docs
-edit_uri: edit/main/docs/
-
 theme:
   name: material
+  custom_dir: docs/overrides
   language: en
   features:
     - navigation.sections
@@ -26,6 +23,8 @@ theme:
 
 extra_css:
   - assets/stylesheets/extra.css
+
+copyright: Copyright &copy; 2026 Kavrynt. All rights reserved.
 
 markdown_extensions:
   - admonition

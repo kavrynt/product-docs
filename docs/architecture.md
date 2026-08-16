@@ -5,22 +5,21 @@ reconciliation, and runtime traffic routing.
 
 ## Logical View
 
-```text
-Developer laptop
-  kavryctl
-    |
-    v
-Kavrynt Registry <---- Operator <---- MCPServer CR
-    |
-    v
-Kavrynt Gateway
-    |
-    v
-MCP server workload
-    |
-    v
-AI client or agent
-```
+<figure class="architecture-diagram">
+  <img
+    src="../assets/images/system-architecture.svg"
+    alt="Kavrynt system architecture showing kavryctl, MCPServer resources, Operator, Registry, Gateway, MCP clients, and MCP server workloads"
+  >
+  <figcaption>
+    Kavrynt separates control-plane reconciliation from runtime MCP traffic.
+  </figcaption>
+</figure>
+
+The upper path manages desired state: platform engineers submit configuration
+with `kavryctl` or Kubernetes `MCPServer` resources, the Operator reconciles
+those resources, and Registry stores the resulting server inventory. The lower
+path handles runtime traffic: Gateway synchronizes routes from Registry and
+proxies MCP client requests to the selected MCP server workload.
 
 ## Components
 

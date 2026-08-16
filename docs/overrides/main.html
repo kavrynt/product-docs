@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block footer %}
+  <footer class="kv-footer">
+    <div class="md-grid kv-footer__inner">
+      <section aria-label="About Kavrynt">
+        <p class="kv-footer__brand">Kavrynt</p>
+        <p class="kv-footer__summary">
+          Kubernetes-native infrastructure for registering, discovering, and
+          routing Model Context Protocol servers.
+        </p>
+      </section>
+      <nav aria-label="Documentation links">
+        <p class="kv-footer__heading">Documentation</p>
+        <div class="kv-footer__links">
+          <a href="{{ 'installation/' | url }}">Installation</a>
+          <a href="{{ 'quickstart/' | url }}">Quickstart</a>
+          <a href="{{ 'architecture/' | url }}">Architecture</a>
+          <a href="{{ 'reference/kavryctl/' | url }}">CLI reference</a>
+        </div>
+      </nav>
+      <nav aria-label="Project links">
+        <p class="kv-footer__heading">Project</p>
+        <div class="kv-footer__links">
+          <a href="https://github.com/kavrynt/kavrynt">Source code</a>
+          <a href="https://github.com/kavrynt/kavrynt/issues">Report an issue</a>
+          <a href="{{ 'release-notes/' | url }}">Release notes</a>
+        </div>
+      </nav>
+    </div>
+    <div class="md-grid kv-footer__bottom">
+      {{ config.copyright }}
+    </div>
+  </footer>
+{% endblock %}

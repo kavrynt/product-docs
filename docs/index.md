@@ -6,8 +6,8 @@ It helps platform and AI engineering teams deploy, secure, and operate MCP
 servers for AI agents across local, self-managed, and managed Kubernetes
 clusters.
 
-[:material-rocket-launch: Install Kavrynt](installation.md){ .md-button .md-button--primary }
-[:material-book-open-page-variant: Read the overview](overview.md){ .md-button }
+[Install Kavrynt](installation.md){ .md-button .md-button--primary }
+[Read the overview](overview.md){ .md-button }
 
 ## What You Can Do Today
 
