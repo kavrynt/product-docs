@@ -4,6 +4,8 @@ site_description: Documentation for Kavrynt, a Kubernetes-native MCP control pla
 theme:
   name: material
   custom_dir: docs/overrides
+  logo: assets/images/kavrynt-logo.svg
+  favicon: assets/images/kavrynt-logo.svg
   language: en
   features:
     - navigation.sections
