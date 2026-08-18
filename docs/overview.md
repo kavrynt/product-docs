@@ -41,10 +41,10 @@ Kavrynt has two packaging directions:
 | Open Kavrynt | Developers and platform teams | CLI, Registry API, Gateway, Operator, Helm charts, local install docs. |
 | Kavrynt Cloud | Teams and enterprises | Hosted registry, control UI, SSO, RBAC, audit logs, policy management, usage dashboard, support. |
 
-The public docs focus first on the open Kubernetes install path.
+The public docs focus first on the Kubernetes trial image path. Source access
+is private and commercial.
 
 ## Current Status
 
 Kavrynt is an early MVP. It is suitable for local testing, demos, and design
 feedback. Production hardening work is still planned.
-

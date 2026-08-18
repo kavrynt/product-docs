@@ -1,9 +1,6 @@
 site_name: Kavrynt Docs
 site_url: https://docs.kavrynt.com
 site_description: Documentation for Kavrynt, a Kubernetes-native MCP control plane.
-repo_name: kavrynt/product-docs
-repo_url: https://github.com/kavrynt/product-docs
-edit_uri: edit/main/docs/
 
 theme:
   name: material
@@ -13,7 +10,6 @@ theme:
     - navigation.instant
     - navigation.top
     - content.code.copy
-    - content.action.edit
     - search.suggest
     - search.highlight
   palette:
@@ -46,6 +42,7 @@ nav:
   - Installation:
       - Install Kavrynt: installation.md
       - Quickstart: quickstart.md
+      - Trial Images on Kind: trial-images-kind.md
   - Architecture:
       - System Architecture: architecture.md
       - MCP Concepts: concepts/mcp.md
@@ -58,4 +55,3 @@ nav:
       - kavryctl CLI: reference/kavryctl.md
       - Troubleshooting: troubleshooting.md
       - Release Notes: release-notes.md
-

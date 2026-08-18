@@ -1,11 +1,12 @@
-# Quickstart
+# Trial Images On Kind
 
-Use this path when you want to test Kavrynt locally with trial images.
+This runbook lets a developer try Kavrynt without source access. It uses a
+disposable Kind cluster and approved alpha or beta trial images.
 
-Kavrynt source is private. Developers do not need source access for the trial
-path.
+Kavrynt is a private commercial product. Trial images are for evaluation only.
+Use the exact registry and tag provided with your trial access.
 
-Set the image registry and tag from your trial access:
+## Set Trial Image Inputs
 
 ```bash
 export KAVRYNT_IMAGE_REGISTRY=docker.io/kavrynt
@@ -20,7 +21,17 @@ kubectl cluster-info --context kind-kavrynt-dev
 kubectl get nodes
 ```
 
-## Install Kavrynt
+## Confirm Image Pulls
+
+```bash
+docker pull "$KAVRYNT_IMAGE_REGISTRY/registry:$KAVRYNT_TRIAL_TAG"
+docker pull "$KAVRYNT_IMAGE_REGISTRY/gateway:$KAVRYNT_TRIAL_TAG"
+docker pull "$KAVRYNT_IMAGE_REGISTRY/k8s-operator:$KAVRYNT_TRIAL_TAG"
+```
+
+If the registry requires authentication, log in before running the pull checks.
+
+## Deploy Registry And Gateway
 
 ```bash
 kubectl create namespace kavrynt-system
@@ -44,6 +55,7 @@ spec:
       containers:
         - name: registry
           image: ${KAVRYNT_IMAGE_REGISTRY}/registry:${KAVRYNT_TRIAL_TAG}
+          imagePullPolicy: IfNotPresent
           args: ["--addr", ":8080", "--data", "/data/registry.json"]
           ports:
             - containerPort: 8080
@@ -84,6 +96,7 @@ spec:
       containers:
         - name: gateway
           image: ${KAVRYNT_IMAGE_REGISTRY}/gateway:${KAVRYNT_TRIAL_TAG}
+          imagePullPolicy: IfNotPresent
           args:
             - --addr
             - :8080
@@ -106,21 +119,16 @@ spec:
 EOF
 ```
 
-## Check Pods
+## Verify The Control Plane
 
 ```bash
+kubectl rollout status deployment/kavrynt-registry -n kavrynt-system --timeout=120s
+kubectl rollout status deployment/kavrynt-gateway -n kavrynt-system --timeout=120s
 kubectl get pods -n kavrynt-system
 kubectl get svc -n kavrynt-system
 ```
 
-Expected result:
-
-```text
-kavrynt-registry   Running
-kavrynt-gateway    Running
-```
-
-## Deploy A Sample MCP Server
+## Deploy A Sample MCP Endpoint
 
 ```bash
 kubectl create deployment example-mcp-server \
@@ -132,7 +140,7 @@ kubectl expose deployment example-mcp-server \
   --target-port=8080
 ```
 
-## Register The Server
+## Register The Sample Server
 
 ```bash
 kubectl port-forward -n kavrynt-system svc/kavrynt-registry 18081:8080 >/tmp/kavrynt-registry.log 2>&1 &
@@ -156,7 +164,7 @@ curl -fsS -X POST http://127.0.0.1:18081/v1/servers \
 kill "$registry_pf"
 ```
 
-## Test Registry And Gateway
+## Test The Gateway Route
 
 ```bash
 kubectl port-forward -n kavrynt-system svc/kavrynt-registry 18081:8080 >/tmp/kavrynt-registry.log 2>&1 &
@@ -174,6 +182,12 @@ curl -fsS -X POST http://127.0.0.1:18080/mcp/example-mcp-server \
   --data '{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}'
 
 kill "$registry_pf" "$gateway_pf"
+```
+
+Expected proxy response:
+
+```json
+{"mock":true,"service":"example-mcp-server"}
 ```
 
 ## Clean Up

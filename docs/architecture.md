@@ -66,7 +66,7 @@ kavrynt-operator
 
 ## Future Commercial Control Plane
 
-The open install path runs in a user's cluster. Kavrynt Cloud can add hosted
+The trial image install path runs in a user's cluster. Kavrynt Cloud can add hosted
 control services:
 
 - Hosted registry
@@ -77,4 +77,3 @@ control services:
 - Policy management
 - Usage dashboard
 - MCP capability catalog
-

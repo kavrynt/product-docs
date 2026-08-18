@@ -1,6 +1,6 @@
 # Kavrynt Docs
 
-This repository publishes the public Kavrynt documentation site at:
+This repository publishes the Kavrynt documentation site at:
 
 https://docs.kavrynt.com
 
