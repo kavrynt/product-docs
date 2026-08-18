@@ -4,15 +4,14 @@
 
 Kavrynt is in MVP development.
 
-Current public testing scope:
+Current commercial trial scope:
 
-- `kavryctl`
 - Registry
 - Gateway
 - Operator
-- Helm install path
 - Local Kind quickstart
 - Kubernetes install path for managed and self-managed clusters
+- Approved alpha or beta container images
 
 ## Planned
 
@@ -23,4 +22,3 @@ Current public testing scope:
 - Authentication
 - Policy controls
 - Hosted control UI
-

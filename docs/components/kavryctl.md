@@ -2,7 +2,9 @@
 
 `kavryctl` is the Kavrynt developer CLI.
 
-It is the first tool a developer installs on a laptop or workstation.
+For the current commercial trial path, developers can evaluate Kavrynt with
+container images only. `kavryctl` remains part of the product roadmap, but the
+public documentation no longer requires source access or a CLI install.
 
 ## Responsibilities
 
@@ -12,23 +14,11 @@ It is the first tool a developer installs on a laptop or workstation.
 - Inspect server metadata.
 - Help test a Kavrynt install.
 
-## Install
+## Availability
 
-Release path:
-
-```bash
-curl -fsSL https://kavrynt.com/install.sh | sh
-export PATH="$HOME/.kavrynt/bin:$PATH"
-kavryctl version
-```
-
-Source fallback:
-
-```bash
-git clone https://github.com/kavrynt/kavrynt.git
-cd kavrynt
-go install ./cmd/kavryctl
-```
+Kavrynt will distribute `kavryctl` through approved commercial release channels
+when it is included in the trial package. Until then, use the
+[Trial Images on Kind](../trial-images-kind.md) runbook.
 
 ## How It Connects
 
@@ -45,4 +35,3 @@ Then point `kavryctl` at:
 ```text
 http://127.0.0.1:18081
 ```
-

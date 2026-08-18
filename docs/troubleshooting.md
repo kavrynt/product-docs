@@ -39,21 +39,28 @@ kubectl port-forward -n kavrynt-system svc/kavrynt-gateway 18080:8080
 curl -fsS http://127.0.0.1:18080/v1/routes
 ```
 
-## Helm Install Failed
+## Trial Image Pull Failed
 
-Render the chart locally:
+Check the image registry and tag from your trial access:
 
 ```bash
-helm dependency build charts/kavrynt
-helm template kavrynt charts/kavrynt --namespace kavrynt-system
+echo "$KAVRYNT_IMAGE_REGISTRY"
+echo "$KAVRYNT_TRIAL_TAG"
+docker pull "$KAVRYNT_IMAGE_REGISTRY/registry:$KAVRYNT_TRIAL_TAG"
+docker pull "$KAVRYNT_IMAGE_REGISTRY/gateway:$KAVRYNT_TRIAL_TAG"
 ```
 
-Then retry:
+If your trial registry requires authentication, log in with the credentials
+provided for the trial before retrying the pull.
+
+## Trial Deployment Failed
+
+Check the workload rollout and recent events:
 
 ```bash
-helm upgrade --install kavrynt charts/kavrynt \
-  --namespace kavrynt-system \
-  --create-namespace
+kubectl rollout status deployment/kavrynt-registry -n kavrynt-system --timeout=120s
+kubectl rollout status deployment/kavrynt-gateway -n kavrynt-system --timeout=120s
+kubectl get events -n kavrynt-system --sort-by=.lastTimestamp
 ```
 
 ## DNS For docs.kavrynt.com Does Not Work
@@ -63,12 +70,11 @@ Check the DNS record:
 ```text
 Type:  CNAME
 Name:  docs
-Value: kavrynt.github.io
+Value: <hosting-provider-target>
 ```
 
-After DNS is configured, set the GitHub Pages custom domain to:
+After DNS is configured, set the hosting custom domain to:
 
 ```text
 docs.kavrynt.com
 ```
-
