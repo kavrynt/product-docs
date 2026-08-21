@@ -6,8 +6,8 @@ It helps platform and AI engineering teams deploy, secure, and operate MCP
 servers for AI agents across local, self-managed, and managed Kubernetes
 clusters.
 
-[:material-rocket-launch: Run trial images](trial-images-kind.md){ .md-button .md-button--primary }
-[:material-book-open-page-variant: Read the overview](overview.md){ .md-button }
+[Try Kavrynt](trial-images-kind.md){ .md-button .md-button--primary }
+[Read the overview](overview.md){ .md-button }
 
 ## What You Can Do Today
 
@@ -26,22 +26,22 @@ clusters.
 | Gateway | Data-plane entry point for routing MCP traffic. |
 | Operator | Kubernetes controller that syncs `MCPServer` resources into Registry. |
 
-## First Trial Path
+## How to try Kavrynt
 
 ```bash
 export KAVRYNT_IMAGE_REGISTRY=docker.io/kavrynt
-export KAVRYNT_TRIAL_TAG=0.1.0-beta
+export KAVRYNT_IMAGE_TAG=0.0.1-beta
 
 kind create cluster --name kavrynt-dev
 kubectl create namespace kavrynt-system
-docker pull "$KAVRYNT_IMAGE_REGISTRY/registry:$KAVRYNT_TRIAL_TAG"
+docker pull "$KAVRYNT_IMAGE_REGISTRY/registry:$KAVRYNT_IMAGE_TAG"
 ```
 
-Continue with [Trial Images on Kind](trial-images-kind.md).
+Continue with [Kavrynt Images on Kind](trial-images-kind.md).
 
 ## Where To Go Next
 
 - New users should start with [Overview](overview.md).
 - Platform engineers should use [Installation](installation.md).
-- Developers testing locally should use [Trial Images on Kind](trial-images-kind.md).
+- Developers testing locally should use [Images on Kind](trial-images-kind.md).
 - Architecture reviewers should read [System Architecture](architecture.md).
