@@ -9,7 +9,7 @@ Set the image registry and tag from your trial access:
 
 ```bash
 export KAVRYNT_IMAGE_REGISTRY=docker.io/kavrynt
-export KAVRYNT_TRIAL_TAG=0.1.0-beta
+export KAVRYNT_TRIAL_TAG=0.0.1-beta.1
 ```
 
 ## Create A Local Cluster
