@@ -32,11 +32,11 @@ Kavrynt publishes only approved trial images for developer evaluation:
 
 ```bash
 export KAVRYNT_IMAGE_REGISTRY=docker.io/kavrynt
-export KAVRYNT_TRIAL_TAG=0.1.0-beta
+export KAVRYNT_TRIAL_TAG=0.0.1-beta.1
 
 docker pull "$KAVRYNT_IMAGE_REGISTRY/registry:$KAVRYNT_TRIAL_TAG"
 docker pull "$KAVRYNT_IMAGE_REGISTRY/gateway:$KAVRYNT_TRIAL_TAG"
-docker pull "$KAVRYNT_IMAGE_REGISTRY/k8s-operator:$KAVRYNT_TRIAL_TAG"
+docker pull "$KAVRYNT_IMAGE_REGISTRY/operator:$KAVRYNT_TRIAL_TAG"
 ```
 
 Use the exact registry and tag provided with your trial access.
