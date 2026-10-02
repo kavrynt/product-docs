@@ -1,186 +1,152 @@
-# Quickstart
+# Quickstart on Kind
 
-Use this path when you want to test Kavrynt locally with trial images.
+Run Kavrynt `0.0.2-beta.1` in a disposable local Kind cluster, register an MCP
+server, and route a request through the Gateway. No source access is needed:
+everything comes from published container images and the Helm chart.
 
-Kavrynt source is private. Developers do not need source access for the trial
-path.
+Time: about 10 minutes.
 
-Set the image registry and tag from your trial access:
+!!! warning "Beta"
+    `0.0.2-beta.1` is for evaluation in trusted clusters. The Gateway does not
+    authenticate clients or enforce policy yet. See
+    [Current limitations](overview.md#current-limitations).
 
-```bash
-export KAVRYNT_IMAGE_REGISTRY=docker.io/kavrynt
-export KAVRYNT_TRIAL_TAG=0.0.1-beta.1
-```
+## Prerequisites
 
-## Create A Local Cluster
-
-```bash
-kind create cluster --name kavrynt-dev
-kubectl cluster-info --context kind-kavrynt-dev
-kubectl get nodes
-```
-
-## Install Kavrynt
+- Docker
+- [Kind](https://kind.sigs.k8s.io/) 0.20 or newer
+- `kubectl` 1.29 or newer
+- [Helm](https://helm.sh/) 3.8 or newer (OCI chart support)
+- `curl`
 
 ```bash
-kubectl create namespace kavrynt-system
-
-kubectl apply -f - <<EOF
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: kavrynt-registry
-  namespace: kavrynt-system
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: kavrynt-registry
-  template:
-    metadata:
-      labels:
-        app: kavrynt-registry
-    spec:
-      containers:
-        - name: registry
-          image: ${KAVRYNT_IMAGE_REGISTRY}/registry:${KAVRYNT_TRIAL_TAG}
-          args: ["--addr", ":8080", "--data", "/data/registry.json"]
-          ports:
-            - containerPort: 8080
-          volumeMounts:
-            - name: data
-              mountPath: /data
-      volumes:
-        - name: data
-          emptyDir: {}
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: kavrynt-registry
-  namespace: kavrynt-system
-spec:
-  selector:
-    app: kavrynt-registry
-  ports:
-    - port: 8080
-      targetPort: 8080
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: kavrynt-gateway
-  namespace: kavrynt-system
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: kavrynt-gateway
-  template:
-    metadata:
-      labels:
-        app: kavrynt-gateway
-    spec:
-      containers:
-        - name: gateway
-          image: ${KAVRYNT_IMAGE_REGISTRY}/gateway:${KAVRYNT_TRIAL_TAG}
-          args:
-            - --addr
-            - :8080
-            - --registry-url
-            - http://kavrynt-registry.kavrynt-system.svc.cluster.local:8080
-          ports:
-            - containerPort: 8080
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: kavrynt-gateway
-  namespace: kavrynt-system
-spec:
-  selector:
-    app: kavrynt-gateway
-  ports:
-    - port: 8080
-      targetPort: 8080
-EOF
+docker version --format '{{.Server.Version}}'
+kind version
+kubectl version --client
+helm version --short
 ```
 
-## Check Pods
+## 1. Create a cluster
 
 ```bash
-kubectl get pods -n kavrynt-system
-kubectl get svc -n kavrynt-system
+kind create cluster --name kavrynt-trial
+kubectl config current-context
 ```
 
-Expected result:
+Expected: `kind-kavrynt-trial`.
+
+## 2. Install Kavrynt
+
+```bash
+export KAVRYNT_VERSION=0.0.2-beta.1
+
+helm upgrade --install kavrynt oci://registry-1.docker.io/kavrynt/kavrynt \
+  --version "$KAVRYNT_VERSION" \
+  --namespace kavrynt-system \
+  --create-namespace \
+  --wait --timeout 3m
+```
+
+The chart installs the `MCPServer` CRD, the Operator, and the Gateway, pulling
+`docker.io/kavrynt/gateway` and `docker.io/kavrynt/operator` at the same
+version.
+
+Check the runtime:
+
+```bash
+kubectl get deployments -n kavrynt-system
+kubectl get crd mcpservers.kavrynt.io
+```
+
+Expected:
 
 ```text
-kavrynt-registry   Running
-kavrynt-gateway    Running
+NAME               READY   UP-TO-DATE   AVAILABLE
+kavrynt-gateway    1/1     1            1
+kavrynt-operator   1/1     1            1
 ```
 
-## Deploy A Sample MCP Server
+## 3. Deploy a test backend
+
+This echo server proves routing. It is not an MCP implementation; any MCP
+server that speaks Streamable HTTP works the same way.
 
 ```bash
 kubectl create deployment example-mcp-server \
   --image=hashicorp/http-echo:1.0 \
-  -- -listen=:8080 -text='{"mock":true,"service":"example-mcp-server"}'
+  -- /http-echo -listen=:8080 -text='{"mock":true,"service":"example-mcp-server"}'
 
-kubectl expose deployment example-mcp-server \
-  --port=8080 \
-  --target-port=8080
+kubectl expose deployment example-mcp-server --port=8080 --target-port=8080
+kubectl rollout status deployment/example-mcp-server --timeout=120s
 ```
 
-## Register The Server
+## 4. Register it as an MCPServer
 
 ```bash
-kubectl port-forward -n kavrynt-system svc/kavrynt-registry 18081:8080 >/tmp/kavrynt-registry.log 2>&1 &
-registry_pf=$!
+kubectl apply -f - <<'EOF'
+apiVersion: kavrynt.io/v1alpha1
+kind: MCPServer
+metadata:
+  name: example-mcp-server
+  namespace: default
+spec:
+  version: 0.1.0
+  transport: http
+  endpoint: http://example-mcp-server.default.svc.cluster.local:8080
+EOF
 
+kubectl wait mcpserver/example-mcp-server --for=condition=Ready --timeout=60s
+kubectl get mcpservers
+```
+
+Expected:
+
+```text
+NAME                 TRANSPORT   VERSION   READY   AGE
+example-mcp-server   http        0.1.0     True    5s
+```
+
+## 5. Route a request through the Gateway
+
+```bash
+kubectl port-forward -n kavrynt-system svc/kavrynt-gateway 18080:8080 >/tmp/kavrynt-gateway.log 2>&1 &
+GATEWAY_PF=$!
 sleep 3
 
-curl -fsS -X POST http://127.0.0.1:18081/v1/servers \
-  -H 'Content-Type: application/json' \
-  --data '{
-    "apiVersion":"kavrynt.io/v1alpha1",
-    "kind":"MCPServer",
-    "metadata":{"name":"example-mcp-server"},
-    "spec":{
-      "version":"0.1.0",
-      "transport":"http",
-      "endpoint":"http://example-mcp-server.default.svc.cluster.local:8080"
-    }
-  }'
-
-kill "$registry_pf"
-```
-
-## Test Registry And Gateway
-
-```bash
-kubectl port-forward -n kavrynt-system svc/kavrynt-registry 18081:8080 >/tmp/kavrynt-registry.log 2>&1 &
-registry_pf=$!
-
-kubectl port-forward -n kavrynt-system svc/kavrynt-gateway 18080:8080 >/tmp/kavrynt-gateway.log 2>&1 &
-gateway_pf=$!
-
-sleep 12
-
-curl -fsS http://127.0.0.1:18081/v1/servers/example-mcp-server
 curl -fsS http://127.0.0.1:18080/v1/routes
-curl -fsS -X POST http://127.0.0.1:18080/mcp/example-mcp-server \
+curl -fsS -X POST http://127.0.0.1:18080/mcp/default.example-mcp-server \
   -H 'Content-Type: application/json' \
   --data '{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}'
-
-kill "$registry_pf" "$gateway_pf"
 ```
 
-## Clean Up
+Expected route list (abridged) and proxied response:
+
+```text
+{"routes":[{"name":"default.example-mcp-server","version":"0.1.0","transport":"http",...}]}
+{"mock":true,"service":"example-mcp-server"}
+```
+
+Routes are namespace-qualified: `/mcp/<namespace>.<name>`.
+
+## 6. Remove the server
 
 ```bash
-kubectl delete service example-mcp-server
-kubectl delete deployment example-mcp-server
-kubectl delete namespace kavrynt-system
-kind delete cluster --name kavrynt-dev
+kubectl delete mcpserver example-mcp-server
+sleep 2
+curl -fsS http://127.0.0.1:18080/v1/routes
+kill "$GATEWAY_PF"
 ```
+
+Expected: `{"routes":[]}`.
+
+## Clean up
+
+```bash
+kind delete cluster --name kavrynt-trial
+```
+
+## Next steps
+
+- [Install on any Kubernetes cluster](installation.md)
+- [MCPServer reference](reference/mcpserver.md)
+- [Troubleshooting](troubleshooting.md)

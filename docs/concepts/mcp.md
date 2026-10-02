@@ -13,7 +13,7 @@ Kavrynt does not replace MCP. Kavrynt helps teams operate MCP servers.
 | MCP server | Service that exposes capabilities to an AI client. |
 | Tool | Action or capability exposed by an MCP server. |
 | Gateway | Stable entry point between clients and registered servers. |
-| Registry | Catalog of known MCP servers and their metadata. |
+| `MCPServer` | Kubernetes resource that declares an MCP server and its endpoint. |
 
 ## Why A Control Plane Helps
 

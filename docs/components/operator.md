@@ -1,46 +1,16 @@
 # Operator
 
-Operator makes Kavrynt Kubernetes-native.
-
-It watches `MCPServer` custom resources and syncs the desired state into
-Registry.
+The Operator is the Kubernetes controller for `MCPServer` resources.
 
 ## Responsibilities
 
-- Watch `MCPServer` resources.
-- Reconcile desired state.
-- Register or update records in Registry.
-- Report status back to Kubernetes resources.
+- Validate each `MCPServer` (the API server enforces the same core rules at
+  admission).
+- Set `Accepted` and `Ready` conditions and `observedGeneration`.
+- Clean up state left by `0.0.1-beta.1` (legacy finalizer and condition).
 
-## Runtime
+It does not deploy MCP server workloads or manage their secrets: you run your
+MCP servers as normal Kubernetes workloads and describe them with an
+`MCPServer`.
 
-Operator runs in Kubernetes as:
-
-```text
-deployment/kavrynt-operator
-```
-
-The CRD is:
-
-```text
-mcpservers.kavrynt.io
-```
-
-## Example Flow
-
-```text
-kubectl apply -f mcpserver.yaml
-  -> Operator receives event
-  -> Operator validates desired state
-  -> Operator writes record to Registry
-  -> Gateway can route traffic
-```
-
-## Future Work
-
-- Better status conditions
-- Retry backoff
-- Finalizers for cleanup
-- Admission validation
-- Policy checks before registration
-
+See the [MCPServer reference](../reference/mcpserver.md).

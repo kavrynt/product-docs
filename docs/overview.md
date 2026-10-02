@@ -1,50 +1,60 @@
 # Overview
 
-Kavrynt provides a control plane for teams that want to run MCP servers in a
-repeatable, Kubernetes-native way.
-
-MCP makes tools and context available to AI agents. As teams add more MCP
-servers, they need a way to track what exists, route traffic predictably, apply
-policy, and operate the system with familiar platform practices.
-
-Kavrynt starts with that operational foundation.
+MCP makes tools and context available to AI agents. As teams add MCP servers,
+platform and security teams need to know what exists, route traffic
+predictably, and eventually control who can call which tool. Kavrynt provides
+that operational layer on Kubernetes.
 
 ## Problem
 
-Without a control plane, MCP usage can become difficult to manage:
+- MCP servers are created by different teams without a shared inventory.
+- AI clients need stable endpoints while servers move and change.
+- Platform teams need MCP servers to follow normal Kubernetes practices.
+- Security teams need one place to add authentication, policy, approval, and
+  audit for tool calls.
 
-- MCP servers are created by different teams without a shared catalog.
-- AI clients need stable endpoints but MCP servers move or change.
-- Platform teams need visibility into what is deployed.
-- Security teams need a place to add policy, approval, and audit controls.
-- Developers need a simple local and Kubernetes install path.
-
-## Kavrynt MVP
-
-The MVP focuses on the first useful workflow:
+## How Kavrynt works today
 
 ```text
-Developer
-  -> kavryctl or MCPServer custom resource
-  -> Registry
-  -> Gateway
+Developer / platform engineer
+  -> MCPServer resource (kubectl, GitOps, or kavryctl)
+  -> Kubernetes API (validated at admission)
+  -> Operator sets Accepted / Ready
+  -> Gateway watches Ready servers
+  -> AI client calls /mcp/<namespace>.<name>
   -> MCP server
-  -> AI client traffic
 ```
 
-## Product Shape
+Customer MCP traffic stays inside the customer's cluster.
 
-Kavrynt has two packaging directions:
+## Product shape
 
-| Package | Audience | Scope |
+| Offering | Scope | Status |
 | --- | --- | --- |
-| Open Kavrynt | Developers and platform teams | CLI, Registry API, Gateway, Operator, Helm charts, local install docs. |
-| Kavrynt Cloud | Teams and enterprises | Hosted registry, control UI, SSO, RBAC, audit logs, policy management, usage dashboard, support. |
+| Kavrynt Runtime | Operator, Gateway, `MCPServer` CRD, Helm chart, `kavryctl`, delivered as signed images and a chart | Beta (`0.0.2-beta.1`) |
+| Kavrynt Cloud | Hosted inventory across clusters, console, SSO, RBAC, policy, approvals, audit, usage | In development, not available |
 
-The public docs focus first on the Kubernetes trial image path. Source access
-is private and commercial.
+Kavrynt is commercial software. Evaluation uses published container images and
+the Helm chart; source code is not distributed.
 
-## Current Status
+## Current limitations
 
-Kavrynt is an early MVP. It is suitable for local testing, demos, and design
-feedback. Production hardening work is still planned.
+`0.0.2-beta.1` is an early beta for trusted evaluation clusters:
+
+- The Gateway does not authenticate clients or enforce tool-level policy.
+- The Gateway does not exchange tokens for upstream servers, so MCP servers
+  that need user identity must use their own credentials.
+- Only the `http` transport is routed; `stdio` servers are accepted but not
+  routable.
+- Single Gateway replica by default; no high-availability profile has been
+  validated.
+- No audit or usage events yet.
+
+## Roadmap (planned, not implemented)
+
+1. Gateway as an OAuth 2.1 resource server following the MCP authorization
+   specification, using your identity provider.
+2. Tool-level policy evaluated in the Gateway, with approvals for high-risk
+   tools.
+3. Audit and usage events.
+4. Kavrynt Cloud: cross-cluster inventory and central policy.

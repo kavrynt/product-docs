@@ -1,40 +1,28 @@
 # Gateway
 
-Gateway is the runtime entry point for MCP traffic.
-
-It reads route information from Registry and proxies traffic to registered MCP
-servers.
+The Gateway is the runtime entry point for MCP traffic.
 
 ## Responsibilities
 
-- Load route data from Registry.
-- Expose stable HTTP routes.
-- Proxy requests to upstream MCP servers.
-- Provide a single point where future policy and audit controls can be added.
+- Watch `MCPServer` resources (read-only) and route every `Ready` `http` server
+  at `/mcp/<namespace>.<name>`.
+- Proxy requests to the server endpoint, removing hop-by-hop headers and caller
+  credentials (`Authorization`, `Cookie`, `Proxy-Authorization`).
+- Expose health, readiness, version, metrics, and route listing.
 
-## Runtime
+## Endpoints
 
-Gateway runs in Kubernetes as:
+| Path | Purpose |
+| --- | --- |
+| `/healthz` | Liveness |
+| `/readyz` | Ready after the first route sync |
+| `/version` | Build version |
+| `/metrics` | Prometheus text counters |
+| `/v1/routes` | Current routes |
+| `/mcp/<namespace>.<name>/...` | Proxied MCP traffic |
 
-```text
-deployment/kavrynt-gateway
-service/kavrynt-gateway
-```
+## Not yet implemented
 
-## Test Access
-
-```bash
-kubectl port-forward -n kavrynt-system svc/kavrynt-gateway 18080:8080
-curl -fsS http://127.0.0.1:18080/v1/routes
-```
-
-## Route Shape
-
-The MVP route pattern is:
-
-```text
-/mcp/<server-name>
-```
-
-Future versions may add richer routing, authentication, and policy controls.
-
+Client authentication, tool-level policy, approvals, audit events, and token
+exchange for upstream servers. Keep the Gateway on an internal `ClusterIP`
+service in this beta.
