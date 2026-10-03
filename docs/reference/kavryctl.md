@@ -1,42 +1,36 @@
 # kavryctl CLI Reference
 
-This reference documents the intended MVP command shape.
+`kavryctl` manages `MCPServer` resources through your kubeconfig. Everything it
+does can also be done with `kubectl`.
 
-!!! note
-    Command flags may change while Kavrynt is in early MVP development.
+!!! note "Availability"
+    During the beta, `kavryctl` binaries are provided with trial access. All
+    guides on this site work with `kubectl` alone.
 
-## Version
+## Cluster flags
+
+| Flag | Purpose |
+| --- | --- |
+| `--kubeconfig PATH` | Kubeconfig file (default: `KUBECONFIG` or `~/.kube/config`) |
+| `--context NAME` | Kubeconfig context |
+| `-n`, `--namespace NS` | Namespace (default: manifest namespace, then the context namespace) |
+
+## Commands
 
 ```bash
 kavryctl version
+kavryctl validate server.yaml               # offline, YAML or JSON
+kavryctl register -n team-a server.yaml     # create or update
+kavryctl list -A                            # all namespaces
+kavryctl inspect -n team-a payments         # full resource as JSON
+kavryctl unregister -n team-a payments
 ```
 
-## Register
+Example `list` output:
 
-```bash
-kavryctl register \
-  --registry http://127.0.0.1:18081 \
-  --name example-mcp-server \
-  --endpoint http://example-mcp-server.default.svc.cluster.local:8080
+```text
+NAMESPACE  NAME      VERSION  TRANSPORT  READY  ROUTE                AGE
+team-a     payments  1.0.0    http       True   /mcp/team-a.payments  2m
 ```
 
-## Unregister
-
-```bash
-kavryctl unregister \
-  --registry http://127.0.0.1:18081 \
-  --name example-mcp-server
-```
-
-## List
-
-```bash
-kavryctl list --registry http://127.0.0.1:18081
-```
-
-## Inspect
-
-```bash
-kavryctl get example-mcp-server --registry http://127.0.0.1:18081
-```
-
+Exit codes: `0` success, `1` operation failed, `2` usage error.

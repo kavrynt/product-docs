@@ -44,19 +44,19 @@ markdown_extensions:
 nav:
   - Home: index.md
   - Overview: overview.md
-  - Installation:
-      - Install Kavrynt: installation.md
-      - Quickstart: quickstart.md
-      - Trial Images on Kind: trial-images-kind.md
+  - Get Started:
+      - Quickstart on Kind: quickstart.md
+      - Install on Kubernetes: installation.md
+      - Upgrade to 0.0.2-beta.1: upgrade.md
   - Architecture:
       - System Architecture: architecture.md
       - MCP Concepts: concepts/mcp.md
   - Components:
-      - kavryctl: components/kavryctl.md
-      - Registry: components/registry.md
       - Gateway: components/gateway.md
       - Operator: components/operator.md
+      - kavryctl: components/kavryctl.md
   - Reference:
+      - MCPServer Resource: reference/mcpserver.md
       - kavryctl CLI: reference/kavryctl.md
       - Troubleshooting: troubleshooting.md
       - Release Notes: release-notes.md

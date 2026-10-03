@@ -1,78 +1,62 @@
 # System Architecture
 
-Kavrynt separates developer intent, control-plane metadata, Kubernetes
-reconciliation, and runtime traffic routing.
+Kavrynt separates desired state (Kubernetes resources) from runtime traffic
+(the Gateway). The Kubernetes API is the only in-cluster source of truth.
 
-## Logical View
+## Logical view
 
-<figure class="architecture-diagram">
-  <img
-    src="../assets/images/system-architecture.svg"
-    alt="Kavrynt system architecture showing kavryctl, MCPServer resources, Operator, Registry, Gateway, MCP clients, and MCP server workloads"
-  >
-  <figcaption>
-    Kavrynt separates control-plane reconciliation from runtime MCP traffic.
-  </figcaption>
-</figure>
-
-The upper path manages desired state: platform engineers submit configuration
-with `kavryctl` or Kubernetes `MCPServer` resources, the Operator reconciles
-those resources, and Registry stores the resulting server inventory. The lower
-path handles runtime traffic: Gateway synchronizes routes from Registry and
-proxies MCP client requests to the selected MCP server workload.
+```text
+             desired state                                runtime traffic
+  +------------------------------+
+  | kubectl / GitOps / kavryctl  |
+  +--------------+---------------+
+                 | MCPServer
+                 v
+  +------------------------------+   validate, set     +------------------+
+  | Kubernetes API server        |<--------------------| Kavrynt Operator |
+  | (CRD admission validation)   |   Accepted / Ready  +------------------+
+  +--------------+---------------+
+                 | watch (read-only)
+                 v
+  +------------------------------+                     +------------------+
+  | Kavrynt Gateway              |<--------------------| MCP client/agent |
+  | /mcp/<namespace>.<name>      |                     +------------------+
+  +--------------+---------------+
+                 | HTTP, caller credentials removed
+                 v
+  +------------------------------+
+  | MCP server workloads         |
+  +------------------------------+
+```
 
 ## Components
 
-| Component | Role |
-| --- | --- |
-| `kavryctl` | CLI used by developers and platform engineers. |
-| Registry | Stores MCP server records and exposes API operations. |
-| Gateway | Loads route information and proxies MCP traffic. |
-| Operator | Watches Kubernetes resources and syncs desired state. |
-| Helm chart | Installs the control-plane components into Kubernetes. |
+| Component | Role | Kubernetes access |
+| --- | --- | --- |
+| Operator | Validates `MCPServer` resources and writes status conditions | Read/update `MCPServer` and its status; Leases for leader election |
+| Gateway | Builds routes from `Ready` servers and proxies HTTP MCP requests | `get`, `list`, `watch` on `MCPServer` only |
+| `kavryctl` | Client CLI | Uses the caller's kubeconfig and RBAC |
+| Helm chart | Installs the CRD, Operator, and Gateway | — |
 
-## Control Plane
+## Request path
 
-The control plane is responsible for metadata and desired state.
+1. A client sends `POST /mcp/<namespace>.<name>` to the Gateway.
+2. The Gateway looks up the route. Unknown routes return `404`.
+3. The Gateway removes hop-by-hop headers and caller credentials
+   (`Authorization`, `Cookie`, `Proxy-Authorization`) and adds
+   `X-Kavrynt-Route`.
+4. The request is forwarded to the server's `spec.endpoint`; the response is
+   returned without upstream `Set-Cookie`.
 
-Registry is the central source of truth for server records. Operator reconciles
-Kubernetes resources into Registry. `kavryctl` can also talk to Registry
-directly for developer workflows.
+## Kubernetes boundary
 
-## Data Plane
+Kavrynt installs into `kavrynt-system` by default. `MCPServer` resources can
+live in any namespace; the Gateway route includes the namespace, so equal names
+in different namespaces stay distinct.
 
-Gateway is the first data-plane component. It gives AI clients a stable route
-to registered MCP servers.
+## Planned: Kavrynt Cloud
 
-In the MVP, Gateway is intentionally small. Later it can grow into policy
-enforcement, auth, traffic shaping, and audit points.
-
-## Kubernetes Boundary
-
-Kavrynt runs inside a Kubernetes namespace:
-
-```text
-kavrynt-system
-```
-
-Expected workloads:
-
-```text
-kavrynt-registry
-kavrynt-gateway
-kavrynt-operator
-```
-
-## Future Commercial Control Plane
-
-The trial image install path runs in a user's cluster. Kavrynt Cloud can add hosted
-control services:
-
-- Hosted registry
-- Hosted control UI
-- SSO and RBAC
-- Audit logs
-- Approval workflows
-- Policy management
-- Usage dashboard
-- MCP capability catalog
+Conceptual, not implemented. A hosted control plane will provide cross-cluster
+inventory, console, SSO, RBAC, policy authoring, approvals, audit, and usage.
+Clusters will connect outbound only; MCP traffic and tool calls will stay in the
+customer's cluster, with policy evaluated locally by the Gateway.
