@@ -28,7 +28,9 @@ helm version --short
 | Operator image | `docker.io/kavrynt/operator:0.0.2-beta.1` |
 
 Images are multi-architecture (`linux/amd64`, `linux/arm64`), run as non-root,
-and are signed with Sigstore Cosign (keyless). Verify a signature:
+and are signed with Sigstore Cosign (keyless). Verify a signature with
+[Cosign](https://docs.sigstore.dev/cosign/system_config/installation/) 3.0 or
+newer (older versions report "no signatures found"):
 
 ```bash
 cosign verify \
