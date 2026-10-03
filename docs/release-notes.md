@@ -19,14 +19,12 @@ Beta for evaluation in trusted clusters.
   `Proxy-Authorization` to MCP servers and drops upstream `Set-Cookie`.
 - The Gateway has read-only access to `MCPServer` resources and no other
   Kubernetes permissions.
-- Images and the chart are built from one release, scanned with Trivy, and
-  signed with Cosign.
-
-**Upgrade**: see [Upgrade to 0.0.2-beta.1](upgrade.md).
+- Images are scanned with Trivy and signed with Cosign (keyless). The chart is
+  published from the same release; it is not signed.
 
 **Known limitations**: see [Overview](overview.md#current-limitations).
 
 ## 0.0.1-beta.1
 
-First trial definition with Registry, Gateway, and Operator. Superseded by
-`0.0.2-beta.1`.
+Internal trial build with a separate Registry service. It was not published;
+`0.0.2-beta.1` is the first public beta.

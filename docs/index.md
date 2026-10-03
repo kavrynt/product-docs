@@ -39,5 +39,4 @@ Continue with the [Quickstart](quickstart.md).
 
 - Evaluating Kavrynt: [Overview](overview.md)
 - Installing on a real cluster: [Install on Kubernetes](installation.md)
-- Upgrading from `0.0.1-beta.1`: [Upgrade](upgrade.md)
 - Reviewing the design: [System Architecture](architecture.md)

@@ -52,9 +52,13 @@ the Helm chart; source code is not distributed.
 
 ## Roadmap (planned, not implemented)
 
-1. Gateway as an OAuth 2.1 resource server following the MCP authorization
+1. MCP traffic metrics: requests, errors, and latency per MCP server and tool,
+   with a Grafana dashboard. Metadata only; tool arguments and results are
+   never recorded.
+2. Gateway as an OAuth 2.1 resource server following the MCP authorization
    specification, using your identity provider.
-2. Tool-level policy evaluated in the Gateway, with approvals for high-risk
+3. Tool-level policy evaluated in the Gateway, with approvals for high-risk
    tools.
-3. Audit and usage events.
-4. Kavrynt Cloud: cross-cluster inventory and central policy.
+4. Audit events.
+5. Kavrynt Cloud: cross-cluster inventory, MCP traffic dashboards, and central
+   policy.
