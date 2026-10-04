@@ -47,7 +47,6 @@ nav:
   - Get Started:
       - Quickstart on Kind: quickstart.md
       - Install on Kubernetes: installation.md
-      - Upgrade to 0.0.2-beta.1: upgrade.md
   - Architecture:
       - System Architecture: architecture.md
       - MCP Concepts: concepts/mcp.md

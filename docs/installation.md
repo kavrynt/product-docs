@@ -95,8 +95,21 @@ helm upgrade --install kavrynt oci://registry-1.docker.io/kavrynt/kavrynt \
 
 ## Upgrade
 
-From `0.0.1-beta.1`, follow [Upgrade to 0.0.2-beta.1](upgrade.md). Helm does
-not upgrade CRDs, so always apply the CRD from the target version first.
+Helm does not upgrade CRDs. Apply the CRD from the target version first, then
+upgrade the release:
+
+```bash
+export KAVRYNT_VERSION=<target version>
+helm pull oci://registry-1.docker.io/kavrynt/kavrynt --version "$KAVRYNT_VERSION" \
+  --untar --untardir /tmp/kavrynt-chart
+kubectl apply --server-side --force-conflicts \
+  -f /tmp/kavrynt-chart/kavrynt/charts/k8s-operator/crds/
+helm upgrade kavrynt oci://registry-1.docker.io/kavrynt/kavrynt \
+  --version "$KAVRYNT_VERSION" -n kavrynt-system --reuse-values --wait --timeout 3m
+```
+
+Read the [release notes](release-notes.md) for the target version before you
+upgrade.
 
 ## Uninstall
 
