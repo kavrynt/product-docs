@@ -27,16 +27,61 @@ Context Protocol (MCP) servers for AI agents, on any Kubernetes cluster.
 
 ## Try it
 
-```bash
-kind create cluster --name kavrynt-trial
-helm upgrade --install kavrynt oci://registry-1.docker.io/kavrynt/kavrynt \
-  --version 0.0.2-beta.1 --namespace kavrynt-system --create-namespace --wait
-```
+=== "Local cluster (Kind)"
 
-Continue with the [Quickstart](quickstart.md).
+    ```bash
+    kind create cluster --name kavrynt-trial
+    helm upgrade --install kavrynt oci://registry-1.docker.io/kavrynt/kavrynt \
+      --version 0.0.2-beta.1 --namespace kavrynt-system --create-namespace --wait
+    ```
+
+    Continue with the [Quickstart](quickstart.md).
+
+=== "Existing cluster"
+
+    ```bash
+    helm upgrade --install kavrynt oci://registry-1.docker.io/kavrynt/kavrynt \
+      --version 0.0.2-beta.1 --namespace kavrynt-system --create-namespace --wait
+    ```
+
+    Verify signatures and production settings in
+    [Install on Kubernetes](installation.md).
 
 ## Where to go next
 
-- Evaluating Kavrynt: [Overview](overview.md)
-- Installing on a real cluster: [Install on Kubernetes](installation.md)
-- Reviewing the design: [System Architecture](architecture.md)
+<div class="grid cards" markdown>
+
+-   :material-rocket-launch-outline:{ .lg .middle } __Quickstart__
+
+    ---
+
+    Install Kavrynt on Kind and route your first MCP server through the
+    Gateway.
+
+    [:octicons-arrow-right-24: Quickstart on Kind](quickstart.md)
+
+-   :material-kubernetes:{ .lg .middle } __Install on Kubernetes__
+
+    ---
+
+    Helm values, signature verification, and production settings.
+
+    [:octicons-arrow-right-24: Installation](installation.md)
+
+-   :material-sitemap-outline:{ .lg .middle } __Architecture__
+
+    ---
+
+    How the Operator, Gateway, and `MCPServer` resources fit together.
+
+    [:octicons-arrow-right-24: System Architecture](architecture.md)
+
+-   :material-console:{ .lg .middle } __kavryctl__
+
+    ---
+
+    Validate, register, and inspect MCP servers from the command line.
+
+    [:octicons-arrow-right-24: CLI reference](reference/kavryctl.md)
+
+</div>

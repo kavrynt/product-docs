@@ -1,6 +1,26 @@
+/* Brand colours for both schemes (palette primary and accent are "custom").
+   Light mode uses darker oranges so links and active navigation keep at least
+   4.5:1 contrast on white. */
 :root {
   --md-primary-fg-color: #e95420;
+  --md-primary-fg-color--light: #ff8a1f;
+  --md-primary-fg-color--dark: #9f1239;
+  --md-primary-bg-color: #ffffff;
+  --md-primary-bg-color--light: rgba(255, 255, 255, 0.7);
+}
+
+[data-md-color-scheme="default"] {
+  --md-accent-fg-color: #c2410c;
+  --md-accent-fg-color--transparent: rgba(194, 65, 12, 0.1);
+  --md-typeset-a-color: #c2410c;
+  --kv-link-color: #c2410c;
+}
+
+[data-md-color-scheme="slate"] {
   --md-accent-fg-color: #ff8a1f;
+  --md-accent-fg-color--transparent: rgba(255, 138, 31, 0.1);
+  --md-typeset-a-color: #ff9c34;
+  --kv-link-color: #ff9c34;
 }
 
 .md-header,
@@ -28,7 +48,119 @@
 }
 
 .md-typeset a {
-  color: #ff9c34;
+  color: var(--kv-link-color);
+}
+
+/* Header links: Home, GitHub, Discord (partials/header.html). */
+.kv-header-links {
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+  margin-left: auto;
+}
+
+.kv-header-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.3rem 0.5rem;
+  border-radius: 6px;
+  color: var(--md-primary-bg-color);
+  font-size: 0.7rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.kv-header-link:hover,
+.kv-header-link:focus-visible {
+  background: rgba(255, 255, 255, 0.14);
+  color: var(--md-primary-bg-color);
+}
+
+.kv-header-link svg {
+  display: block;
+  fill: currentcolor;
+}
+
+.kv-header-link__icon svg {
+  width: 0.9rem;
+  height: 0.9rem;
+}
+
+.kv-header-link__external svg {
+  width: 0.6rem;
+  height: 0.6rem;
+  opacity: 0.8;
+}
+
+/* Medium screens: icons only. Phones: links move to the footer. */
+@media screen and (max-width: 76.234375em) {
+  .kv-header-link__text,
+  .kv-header-link__external {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 44.984375em) {
+  .kv-header-links {
+    display: none;
+  }
+}
+
+/* Collapsible navigation sidebar (assets/javascripts/sidebar.js). Only on
+   wide screens, where the sidebar is not a drawer. */
+.kv-sidebar-toggle {
+  display: none;
+}
+
+@media screen and (min-width: 76.25em) {
+  .md-sidebar--primary .md-sidebar__scrollwrap {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .md-sidebar--primary .md-sidebar__inner {
+    flex: 0 0 auto;
+  }
+
+  .kv-sidebar-toggle {
+    position: sticky;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin-top: auto;
+    padding: 0.45rem 0;
+    border: 0;
+    border-top: 1px solid var(--md-default-fg-color--lightest);
+    background: var(--md-default-bg-color);
+    color: var(--md-default-fg-color--light);
+    font-size: 1rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .kv-sidebar-toggle:hover,
+  .kv-sidebar-toggle:focus-visible {
+    color: var(--md-accent-fg-color);
+  }
+
+  [data-kv-sidebar="hidden"] .md-sidebar--primary {
+    width: 2rem;
+  }
+
+  [data-kv-sidebar="hidden"] .md-sidebar--primary .md-sidebar__inner {
+    display: none;
+  }
+
+  [data-kv-sidebar="hidden"] .kv-sidebar-toggle {
+    border-top: 0;
+  }
+
+  [data-kv-sidebar="hidden"] .kv-sidebar-toggle span {
+    transform: rotate(180deg);
+  }
 }
 
 .md-typeset .md-button {
@@ -64,8 +196,12 @@
   text-align: center;
 }
 
+/* Previous/next links sit directly above the Kavrynt footer in one colour. */
+.md-footer {
+  background-color: #14161d;
+}
+
 .kv-footer {
-  margin-top: 2.5rem;
   background: #14161d;
   border-top: 1px solid rgba(255, 138, 31, 0.25);
   color: #d7dae2;
@@ -73,7 +209,7 @@
 
 .kv-footer__inner {
   display: grid;
-  grid-template-columns: minmax(220px, 1.4fr) repeat(2, minmax(150px, 1fr));
+  grid-template-columns: minmax(220px, 1.4fr) repeat(3, minmax(130px, 1fr));
   gap: 2rem;
   padding: 2.4rem 0 2rem;
 }
@@ -136,3 +272,9 @@
   }
 }
 
+
+@media screen and (min-width: 45em) and (max-width: 59.984375em) {
+  .kv-footer__inner {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
