@@ -4,8 +4,8 @@ This repository publishes the Kavrynt documentation site at:
 
 https://docs.kavrynt.com
 
-The site is built with MkDocs Material and deployed to GitHub Pages from the
-`gh-pages` branch.
+The site is built with MkDocs Material and published with GitHub Pages
+deployments from GitHub Actions. No generated files are committed.
 
 ## Local Preview
 
@@ -38,18 +38,29 @@ The workflow:
 
 1. Installs MkDocs Material.
 2. Runs `mkdocs build --strict`.
-3. Publishes the generated static site to the `gh-pages` branch.
+3. Uploads the site as a Pages artifact and deploys it (pull requests only
+   build).
+
+## Site Features
+
+- Light, dark, and system themes from the header toggle.
+- Header links (Home, GitHub, Discord) and the footer's Community column come
+  from `extra.header_links` in `mkdocs.yml`. A link with an empty `url` is
+  hidden; set the Discord invite URL there to show it.
+- The navigation sidebar collapses on wide screens with the button at its
+  bottom (`docs/assets/javascripts/sidebar.js`).
+- `docs/overrides/partials/header.html` and `footer.html` are copies of the
+  Material 9.7.7 partials with marked Kavrynt changes. Re-copy them when
+  upgrading Material.
 
 ## GitHub Pages Setup
 
 In the GitHub repository settings:
 
 1. Open `Settings -> Pages`.
-2. Set source to `Deploy from a branch`.
-3. Select branch `gh-pages`.
-4. Select folder `/ (root)`.
-5. Set custom domain to `docs.kavrynt.com`.
-6. Enable `Enforce HTTPS` after DNS validates.
+2. Set source to `GitHub Actions`.
+3. Set custom domain to `docs.kavrynt.com`.
+4. Enable `Enforce HTTPS` after DNS validates.
 
 ## DNS Setup
 
@@ -63,4 +74,4 @@ TTL:   Auto
 ```
 
 The `docs/CNAME` file is copied into the published site so GitHub Pages keeps
-the custom domain attached to the `gh-pages` branch.
+the custom domain attached.
