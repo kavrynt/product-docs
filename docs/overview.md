@@ -31,15 +31,17 @@ Customer MCP traffic stays inside the customer's cluster.
 
 | Offering | Scope | Status |
 | --- | --- | --- |
-| Kavrynt Runtime | Operator, Gateway, `MCPServer` CRD, Helm chart, `kavryctl`, delivered as signed images and a chart | Beta (`0.0.2-beta.1`) |
+| Kavrynt Runtime | Operator, Gateway, `MCPServer` CRD, Helm chart, `kavryctl`, delivered as signed images and a chart | Beta (`0.0.3-beta.1`) |
 | Kavrynt Cloud | Hosted inventory across clusters, console, SSO, RBAC, policy, approvals, audit, usage | In development, not available |
 
-Kavrynt is commercial software. Evaluation uses published container images and
-the Helm chart; source code is not distributed.
+Kavrynt is commercial software. The runtime source is published at
+[github.com/kavrynt/kavrynt](https://github.com/kavrynt/kavrynt) under the
+Elastic License 2.0: it is source-available, not open source. Evaluation uses
+the published, signed container images and Helm chart.
 
 ## Current limitations
 
-`0.0.2-beta.1` is an early beta for trusted evaluation clusters:
+`0.0.3-beta.1` is an early beta for trusted evaluation clusters:
 
 - The Gateway does not authenticate clients or enforce tool-level policy.
 - The Gateway does not exchange tokens for upstream servers, so MCP servers
@@ -48,17 +50,15 @@ the Helm chart; source code is not distributed.
   routable.
 - Single Gateway replica by default; no high-availability profile has been
   validated.
-- No audit or usage events yet.
+- No audit or usage events yet. The Gateway exports MCP traffic metrics for
+  Prometheus; see [Gateway](components/gateway.md#mcp-traffic-metrics).
 
 ## Roadmap (planned, not implemented)
 
-1. MCP traffic metrics: requests, errors, and latency per MCP server and tool,
-   with a Grafana dashboard. Metadata only; tool arguments and results are
-   never recorded.
-2. Gateway as an OAuth 2.1 resource server following the MCP authorization
+1. Gateway as an OAuth 2.1 resource server following the MCP authorization
    specification, using your identity provider.
-3. Tool-level policy evaluated in the Gateway, with approvals for high-risk
+2. Tool-level policy evaluated in the Gateway, with approvals for high-risk
    tools.
-4. Audit events.
-5. Kavrynt Cloud: cross-cluster inventory, MCP traffic dashboards, and central
+3. Audit events.
+4. Kavrynt Cloud: cross-cluster inventory, MCP traffic dashboards, and central
    policy.

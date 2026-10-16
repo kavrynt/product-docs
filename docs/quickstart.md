@@ -1,13 +1,13 @@
 # Quickstart on Kind
 
-Run Kavrynt `0.0.2-beta.1` in a disposable local Kind cluster, register an MCP
+Run Kavrynt `0.0.3-beta.1` in a disposable local Kind cluster, register an MCP
 server, and route a request through the Gateway. No source access is needed:
 everything comes from published container images and the Helm chart.
 
 Time: about 10 minutes.
 
 !!! warning "Beta"
-    `0.0.2-beta.1` is for evaluation in trusted clusters. The Gateway does not
+    `0.0.3-beta.1` is for evaluation in trusted clusters. The Gateway does not
     authenticate clients or enforce policy yet. See
     [Current limitations](overview.md#current-limitations).
 
@@ -38,7 +38,7 @@ Expected: `kind-kavrynt-trial`.
 ## 2. Install Kavrynt
 
 ```bash
-export KAVRYNT_VERSION=0.0.2-beta.1
+export KAVRYNT_VERSION=0.0.3-beta.1
 
 helm upgrade --install kavrynt oci://registry-1.docker.io/kavrynt/kavrynt \
   --version "$KAVRYNT_VERSION" \

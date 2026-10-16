@@ -16,7 +16,7 @@ Error: ... failed to do request ... registry-1.docker.io
 
 - Use Helm 3.8 or newer (`helm version --short`).
 - Use the full OCI reference: `oci://registry-1.docker.io/kavrynt/kavrynt`
-  with `--version 0.0.2-beta.1`.
+  with `--version 0.0.3-beta.1`.
 - Behind a proxy, set `HTTPS_PROXY` for Helm.
 
 ## Pods stuck in `ImagePullBackOff`
@@ -38,6 +38,7 @@ kubectl describe mcpserver <name> -n <namespace>
 | --- | --- | --- |
 | `InvalidSpec` | The spec failed validation | Read the `Accepted` condition message and fix the spec |
 | `UnsupportedTransport` | `transport: stdio` | Expected: only `http` servers are routed |
+| `NamespaceNotWatched` | The namespace is not in `global.watchNamespaces` | Add the namespace to `global.watchNamespaces`, or move the server |
 | No conditions | Operator not running | `kubectl logs -n kavrynt-system deploy/kavrynt-operator` |
 
 ## `kubectl apply` rejects the endpoint
@@ -52,7 +53,8 @@ Use `http://` or `https://`, a host, and no `user:password@`.
 
 - Use the namespace-qualified name: `/mcp/<namespace>.<name>`.
 - Check the server is `Ready` and listed in `GET /v1/routes`.
-- If `gateway.config.watchNamespaces` is set, the namespace must be in it.
+- If `global.watchNamespaces` is set, the namespace must be in it. The server's
+  `Ready` condition then shows `NamespaceNotWatched`.
 
 ## Gateway `/readyz` returns 503
 

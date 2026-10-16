@@ -1,6 +1,6 @@
 # Install on Kubernetes
 
-Install Kavrynt `0.0.2-beta.1` on any conformant Kubernetes cluster: AKS, EKS,
+Install Kavrynt `0.0.3-beta.1` on any conformant Kubernetes cluster: AKS, EKS,
 GKE, OpenShift, self-managed, or Kind. For a guided local trial, use the
 [Quickstart](quickstart.md).
 
@@ -23,9 +23,9 @@ helm version --short
 
 | Artifact | Reference |
 | --- | --- |
-| Helm chart | `oci://registry-1.docker.io/kavrynt/kavrynt` version `0.0.2-beta.1` |
-| Gateway image | `docker.io/kavrynt/gateway:0.0.2-beta.1` |
-| Operator image | `docker.io/kavrynt/operator:0.0.2-beta.1` |
+| Helm chart | `oci://registry-1.docker.io/kavrynt/kavrynt` version `0.0.3-beta.1` |
+| Gateway image | `docker.io/kavrynt/gateway:0.0.3-beta.1` |
+| Operator image | `docker.io/kavrynt/operator:0.0.3-beta.1` |
 
 Images are multi-architecture (`linux/amd64`, `linux/arm64`), run as non-root,
 and are signed with Sigstore Cosign (keyless). Verify a signature with
@@ -34,15 +34,15 @@ newer (older versions report "no signatures found"):
 
 ```bash
 cosign verify \
-  --certificate-identity "https://github.com/kavrynt/kavrynt/.github/workflows/release.yml@refs/tags/v0.0.2-beta.1" \
+  --certificate-identity "https://github.com/kavrynt/kavrynt/.github/workflows/release.yml@refs/tags/v0.0.3-beta.1" \
   --certificate-oidc-issuer https://token.actions.githubusercontent.com \
-  docker.io/kavrynt/gateway:0.0.2-beta.1
+  docker.io/kavrynt/gateway:0.0.3-beta.1
 ```
 
 ## Install
 
 ```bash
-export KAVRYNT_VERSION=0.0.2-beta.1
+export KAVRYNT_VERSION=0.0.3-beta.1
 
 helm upgrade --install kavrynt oci://registry-1.docker.io/kavrynt/kavrynt \
   --version "$KAVRYNT_VERSION" \
@@ -67,10 +67,13 @@ Pass values with `--set` or `--values`:
 
 | Value | Default | Purpose |
 | --- | --- | --- |
-| `gateway.config.watchNamespaces` | `[]` (all) | Limit the namespaces whose `MCPServer` resources the Gateway routes. A list switches its RBAC to per-namespace Roles. |
+| `global.watchNamespaces` | `[]` (all) | Limit the namespaces whose `MCPServer` resources the Gateway routes. A list switches Gateway RBAC to per-namespace Roles, and the Operator reports servers elsewhere as not `Ready` (`NamespaceNotWatched`). |
 | `gateway.config.stripRequestHeaders` | `[]` | Extra request headers never forwarded to MCP servers. `Authorization`, `Cookie`, and `Proxy-Authorization` are always removed. |
 | `gateway.config.requestTimeout` | `30s` | Upstream request timeout |
 | `gateway.replicaCount` | `1` | Gateway replicas |
+| `gateway.metrics.scrapeAnnotations` | `true` | `prometheus.io/*` pod annotations for annotation-based Prometheus discovery |
+| `gateway.metrics.serviceMonitor.enabled` | `false` | Create a Prometheus Operator `ServiceMonitor` (requires its CRDs) |
+| `gateway.metrics.dashboard.enabled` | `false` | Create a ConfigMap with the "Kavrynt MCP Traffic" Grafana dashboard for the Grafana sidecar |
 | `operator.config.leaderElect` | `true` | Operator leader election |
 | `gateway.image.repository`, `operator.image.repository` | `kavrynt/gateway`, `kavrynt/operator` | Override for a private mirror |
 
@@ -79,8 +82,10 @@ Example: route only two team namespaces.
 ```bash
 helm upgrade --install kavrynt oci://registry-1.docker.io/kavrynt/kavrynt \
   --version "$KAVRYNT_VERSION" -n kavrynt-system --reuse-values \
-  --set 'gateway.config.watchNamespaces={team-a,team-b}'
+  --set 'global.watchNamespaces={team-a,team-b}'
 ```
+
+Each listed namespace must exist before you install or upgrade.
 
 ## Security defaults
 

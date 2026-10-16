@@ -33,7 +33,7 @@ Kavrynt separates desired state (Kubernetes resources) from runtime traffic
 
 | Component | Role | Kubernetes access |
 | --- | --- | --- |
-| Operator | Validates `MCPServer` resources and writes status conditions | Read/update `MCPServer` and its status; Leases for leader election |
+| Operator | Validates `MCPServer` resources and writes status conditions | Read/update `MCPServer` and its status; Leases and Events for leader election |
 | Gateway | Builds routes from `Ready` servers and proxies HTTP MCP requests | `get`, `list`, `watch` on `MCPServer` only |
 | `kavryctl` | Client CLI | Uses the caller's kubeconfig and RBAC |
 | Helm chart | Installs the CRD, Operator, and Gateway | — |

@@ -7,13 +7,15 @@ Context Protocol (MCP) servers for AI agents, on any Kubernetes cluster.
 [Quickstart on Kind](quickstart.md){ .md-button .md-button--primary }
 [Read the overview](overview.md){ .md-button }
 
-## What works today (`0.0.2-beta.1`)
+## What works today (`0.0.3-beta.1`)
 
 - Declare MCP servers as Kubernetes `MCPServer` resources, validated by the API
   server and the Operator.
 - Route MCP traffic through one Gateway at `/mcp/<namespace>.<name>`.
 - Gateway never forwards caller credentials (`Authorization`, `Cookie`) to MCP
   servers.
+- MCP traffic metrics for Prometheus (requests, outcomes, and latency per
+  server and tool) with an optional Grafana dashboard. Metadata only.
 - Install with one Helm chart from signed, multi-architecture images.
 
 ## Components
@@ -32,7 +34,7 @@ Context Protocol (MCP) servers for AI agents, on any Kubernetes cluster.
     ```bash
     kind create cluster --name kavrynt-trial
     helm upgrade --install kavrynt oci://registry-1.docker.io/kavrynt/kavrynt \
-      --version 0.0.2-beta.1 --namespace kavrynt-system --create-namespace --wait
+      --version 0.0.3-beta.1 --namespace kavrynt-system --create-namespace --wait
     ```
 
     Continue with the [Quickstart](quickstart.md).
@@ -41,7 +43,7 @@ Context Protocol (MCP) servers for AI agents, on any Kubernetes cluster.
 
     ```bash
     helm upgrade --install kavrynt oci://registry-1.docker.io/kavrynt/kavrynt \
-      --version 0.0.2-beta.1 --namespace kavrynt-system --create-namespace --wait
+      --version 0.0.3-beta.1 --namespace kavrynt-system --create-namespace --wait
     ```
 
     Verify signatures and production settings in
