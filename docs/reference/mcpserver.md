@@ -35,9 +35,13 @@ spec:
 | Condition | `True` when | `False` reasons |
 | --- | --- | --- |
 | `Accepted` | The spec is valid | `InvalidSpec` |
-| `Ready` | Accepted and `transport: http` | `InvalidSpec`, `UnsupportedTransport` |
+| `Ready` | Accepted, `transport: http`, and in a namespace the Gateway watches | `InvalidSpec`, `UnsupportedTransport`, `NamespaceNotWatched` |
 
 `status.observedGeneration` shows which spec generation the conditions describe.
+
+`NamespaceNotWatched` appears only when `global.watchNamespaces` is set and
+does not include the server's namespace. See
+[Configuration](../installation.md#configuration).
 
 ## Routing
 

@@ -6,7 +6,9 @@ The Operator is the Kubernetes controller for `MCPServer` resources.
 
 - Validate each `MCPServer` (the API server enforces the same core rules at
   admission).
-- Set `Accepted` and `Ready` conditions and `observedGeneration`.
+- Set `Accepted` and `Ready` conditions and `observedGeneration`. A server in
+  a namespace outside `global.watchNamespaces` is not `Ready`
+  (`NamespaceNotWatched`), because the Gateway does not route it.
 
 It does not deploy MCP server workloads or manage their secrets: you run your
 MCP servers as normal Kubernetes workloads and describe them with an
