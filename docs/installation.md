@@ -9,7 +9,7 @@ GKE, OpenShift, self-managed, or Kind. For a guided local trial, use the
 - Kubernetes 1.29 or newer (CRD validation uses CEL rules).
 - `kubectl` with permission to create CRDs, Namespaces, Deployments, Services,
   ServiceAccounts, ClusterRoles, and ClusterRoleBindings.
-- Helm 3.8 or newer.
+- Helm 3.8 or newer; 3.14 or newer to upgrade an existing release.
 - Nodes that can pull from `docker.io`. For air-gapped clusters, mirror the
   images and chart listed below and override `*.image.repository`.
 
@@ -81,7 +81,7 @@ Example: route only two team namespaces.
 
 ```bash
 helm upgrade --install kavrynt oci://registry-1.docker.io/kavrynt/kavrynt \
-  --version "$KAVRYNT_VERSION" -n kavrynt-system --reuse-values \
+  --version "$KAVRYNT_VERSION" -n kavrynt-system --reset-then-reuse-values \
   --set 'global.watchNamespaces={team-a,team-b}'
 ```
 
@@ -110,7 +110,26 @@ helm pull oci://registry-1.docker.io/kavrynt/kavrynt --version "$KAVRYNT_VERSION
 kubectl apply --server-side --force-conflicts \
   -f /tmp/kavrynt-chart/kavrynt/charts/k8s-operator/crds/
 helm upgrade kavrynt oci://registry-1.docker.io/kavrynt/kavrynt \
-  --version "$KAVRYNT_VERSION" -n kavrynt-system --reuse-values --wait --timeout 3m
+  --version "$KAVRYNT_VERSION" -n kavrynt-system --reset-then-reuse-values --wait --timeout 3m
+kubectl get deployments -n kavrynt-system \
+  -o custom-columns='NAME:.metadata.name,IMAGE:.spec.template.spec.containers[0].image'
+```
+
+Both images should show the target version. Use `--reset-then-reuse-values`,
+not `--reuse-values`: `--reuse-values` keeps the previous chart's image tags,
+so Helm reports the new chart version while the old images keep running. If
+you upgraded that way, run the `helm upgrade` command above again.
+
+Upgrading from `0.0.2-beta.1`: if you set `gateway.config.watchNamespaces`,
+the upgrade fails with a message naming its replacement. Move the list to
+`global.watchNamespaces` and clear the old key:
+
+```bash
+helm upgrade kavrynt oci://registry-1.docker.io/kavrynt/kavrynt \
+  --version "$KAVRYNT_VERSION" -n kavrynt-system --reset-then-reuse-values \
+  --set 'global.watchNamespaces={team-a,team-b}' \
+  --set gateway.config.watchNamespaces=null \
+  --wait --timeout 3m
 ```
 
 Read the [release notes](release-notes.md) for the target version before you
