@@ -27,8 +27,12 @@ spec:
 | `command` | when `transport: stdio` | Command to run (recorded; not run by Kavrynt) |
 | `args` | no | Arguments for `command` |
 | `environment` | no | Plain-text key/value pairs. Do not put secrets here. |
+| `credential` | no | The server needs a stored credential: `header` (default `Authorization`) and `scheme` (for example `Bearer`). The value lives in a Secret, never here. `http` only |
+| `tokenExchange` | no | The server gets the caller's token exchanged for its own: `audience` (required, absolute URI) and `scopes`. `http` only; not with `credential` |
 
-`metadata.name` must be a lowercase DNS subdomain.
+`metadata.name` must be a lowercase DNS subdomain. `credential.header` must
+not be a header that frames or routes the request, `Cookie`, or an `Mcp-*`
+header. See [Security](../security.md#credentials-for-mcp-servers).
 
 ## Status
 
@@ -36,8 +40,16 @@ spec:
 | --- | --- | --- |
 | `Accepted` | The spec is valid | `InvalidSpec` |
 | `Ready` | Accepted, `transport: http`, and in a namespace the Gateway watches | `InvalidSpec`, `UnsupportedTransport`, `NamespaceNotWatched` |
+| `ToolsDiscovered` | The Operator listed the server's tools (`Discovered`) | `DiscoveryFailed`, `NotRoutable`, `CredentialUnavailable`, `CallerTokenRequired` |
 
-`status.observedGeneration` shows which spec generation the conditions describe.
+`ToolsDiscovered` never changes `Ready`. The status also carries:
+
+- `status.tools`: the server's tools and input schemas;
+- `status.serverInfo`: the name and version the server reports, shown as
+  `REPORTED` in `kubectl get mcpservers`;
+- `status.observedGeneration`.
+
+Tools and serverInfo come from the server and are untrusted.
 
 `NamespaceNotWatched` appears only when `global.watchNamespaces` is set and
 does not include the server's namespace. See
@@ -46,7 +58,8 @@ does not include the server's namespace. See
 ## Routing
 
 A `Ready` server is routed at `/mcp/<namespace>.<name>`. Path suffixes and
-query strings after the route name are appended to `spec.endpoint`.
+query strings after the route name are appended to `spec.endpoint`. Path
+segments `.` and `..` are rejected.
 
 ```bash
 kubectl get mcpservers -A
