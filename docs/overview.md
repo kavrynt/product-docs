@@ -35,7 +35,7 @@ Customer MCP traffic stays inside the customer's cluster.
 
 | Offering | Scope | Status |
 | --- | --- | --- |
-| Kavrynt Runtime | Operator, Gateway with web console, `MCPServer` CRD, Helm chart, `kavryctl`, delivered as signed images and a chart | Beta (`1.0.0-beta.1`) |
+| Kavrynt Runtime | Operator, Gateway with web console, `MCPServer` CRD, Helm chart, `kavryctl`, delivered as signed images and a chart | Beta (`1.0.0-beta.2`) |
 | Kavrynt Cloud | Hosted inventory across clusters, SSO, RBAC, central policy, approvals, audit storage, usage | In development, not available |
 
 The runtime is open source under the
@@ -45,7 +45,7 @@ to `0.0.4-beta.1` remain under the Elastic License 2.0.
 
 ## Current limitations
 
-`1.0.0-beta.1` is a beta for development and staging clusters:
+`1.0.0-beta.2` is a beta for development and staging clusters:
 
 - **No approvals.** Policy allows or denies; it cannot hold a high-risk call
   for a human.

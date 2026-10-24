@@ -12,8 +12,8 @@ The production profile runs:
 Start from it:
 
 ```bash
-curl -fsSLO https://raw.githubusercontent.com/kavrynt/kavrynt/v1.0.0-beta.1/examples/helm/values-production.yaml
-helm upgrade --install kavrynt oci://registry-1.docker.io/kavrynt/kavrynt --version 1.0.0-beta.1 \
+curl -fsSLO https://raw.githubusercontent.com/kavrynt/kavrynt/v1.0.0-beta.2/examples/helm/values-production.yaml
+helm upgrade --install kavrynt oci://registry-1.docker.io/kavrynt/kavrynt --version 1.0.0-beta.2 \
   -n kavrynt-system --create-namespace --values values-production.yaml \
   --set gateway.auth.resourceURL=https://mcp.example.com \
   --set-json 'gateway.auth.issuers=[{"issuer":"https://login.example.com/realms/agents"}]'
@@ -86,12 +86,6 @@ kavryctl upgrade --version <target version>
 kavryctl rollback                                       # or --revision N
 ```
 
-!!! warning "kavryctl upgrade 1.0.0-beta.1 keeps the old images"
-    `kavryctl upgrade` in `1.0.0-beta.1` runs `helm upgrade --reuse-values`.
-    That keeps the previous chart's defaults, including its image tags, so
-    the old images keep running. Until the next release, upgrade with Helm with
-    `helm upgrade --reset-then-reuse-values` (see
-    [Upgrade](installation.md#upgrade)). `kavryctl rollback` is not affected.
 
 
 **Before anything changes,** `upgrade` checks that:

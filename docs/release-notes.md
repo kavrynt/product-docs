@@ -1,5 +1,18 @@
 # Release Notes
 
+## 1.0.0-beta.2
+
+**Fixed**
+
+- `kavryctl upgrade` now runs `helm upgrade --reset-then-reuse-values` and
+  needs Helm 3.14 or newer. In `1.0.0-beta.1` it ran `--reuse-values`, which
+  kept the previous chart's defaults: the old images kept running. Upgrading
+  from `0.0.5-beta.1` that way also kept MCP routes open instead of asking
+  for the authentication choice.
+
+Everything else is as in `1.0.0-beta.1`. Full notes:
+[GitHub release](https://github.com/kavrynt/kavrynt/releases/tag/v1.0.0-beta.2).
+
 ## 1.0.0-beta.1
 
 Beta for evaluation in development and staging clusters. Full notes:

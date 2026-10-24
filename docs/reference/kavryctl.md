@@ -8,15 +8,15 @@ can register servers with `kubectl` alone instead.
 
 Each release publishes `kavryctl` for Linux, macOS, and Windows (amd64 and
 arm64) on the
-[GitHub release page](https://github.com/kavrynt/kavrynt/releases/tag/v1.0.0-beta.1),
+[GitHub release page](https://github.com/kavrynt/kavrynt/releases/tag/v1.0.0-beta.2),
 with a `SHA256SUMS` file signed with Cosign.
 
 On Linux or macOS, the install script downloads the binary for your platform,
 verifies its checksum, and installs it to `~/.kavrynt/bin`:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/kavrynt/kavrynt/v1.0.0-beta.1/scripts/install.sh \
-  | KAVRYNT_VERSION=v1.0.0-beta.1 sh
+curl -fsSL https://raw.githubusercontent.com/kavrynt/kavrynt/v1.0.0-beta.2/scripts/install.sh \
+  | KAVRYNT_VERSION=v1.0.0-beta.2 sh
 export PATH="$HOME/.kavrynt/bin:$PATH"
 kavryctl version
 ```
@@ -24,7 +24,7 @@ kavryctl version
 To verify by hand instead, download the archive and checksums, then check both:
 
 ```bash
-VERSION=1.0.0-beta.1
+VERSION=1.0.0-beta.2
 BASE=https://github.com/kavrynt/kavrynt/releases/download/v${VERSION}
 ARCHIVE=kavryctl_${VERSION}_linux_amd64.tar.gz   # or darwin_arm64, linux_arm64, ...
 curl -fsSL -O "$BASE/$ARCHIVE" -O "$BASE/SHA256SUMS" -O "$BASE/SHA256SUMS.sigstore.json"
@@ -54,7 +54,7 @@ kavryctl list -A                            # all namespaces
 kavryctl inspect -n team-a payments         # full resource as JSON
 kavryctl unregister -n team-a payments
 kavryctl audit verify gateway.log           # or read standard input
-kavryctl upgrade --version 1.0.0-beta.1     # checked helm upgrade
+kavryctl upgrade --version 1.0.0-beta.2     # checked helm upgrade
 kavryctl rollback [--revision N]            # checked helm rollback
 ```
 
@@ -92,9 +92,5 @@ They need the `helm` binary on `PATH`. Flags:
 
 See [Operations](../operations.md#upgrades-and-rollbacks).
 
-!!! warning
-    `kavryctl upgrade` in `1.0.0-beta.1` runs `helm upgrade --reuse-values`,
-    which keeps the previous chart's image tags. Until the next release,
-    upgrade with `helm upgrade --reset-then-reuse-values`.
 
 Exit codes: `0` success, `1` operation failed, `2` usage error.

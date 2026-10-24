@@ -77,7 +77,7 @@ evaluation over 100 ms.
 
 ```bash
 kubectl -n kavrynt-system create configmap kavrynt-policy --from-file=authz.rego
-helm upgrade kavrynt oci://registry-1.docker.io/kavrynt/kavrynt --version 1.0.0-beta.1 \
+helm upgrade kavrynt oci://registry-1.docker.io/kavrynt/kavrynt --version 1.0.0-beta.2 \
   -n kavrynt-system --reset-then-reuse-values \
   --set gateway.policy.enabled=true --set gateway.policy.configMap=kavrynt-policy
 ```

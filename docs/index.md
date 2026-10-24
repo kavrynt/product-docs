@@ -7,7 +7,7 @@ Model Context Protocol (MCP) servers for AI agents, on any Kubernetes cluster.
 [Quickstart on Kind](quickstart.md){ .md-button .md-button--primary }
 [Read the overview](overview.md){ .md-button }
 
-## What works today (`1.0.0-beta.1`)
+## What works today (`1.0.0-beta.2`)
 
 - **Registration:** declare MCP servers as Kubernetes `MCPServer` resources,
   validated by the API server and the Operator. The Operator lists each
@@ -49,7 +49,7 @@ Model Context Protocol (MCP) servers for AI agents, on any Kubernetes cluster.
     ```bash
     kind create cluster --name kavrynt-trial
     helm upgrade --install kavrynt oci://registry-1.docker.io/kavrynt/kavrynt \
-      --version 1.0.0-beta.1 --namespace kavrynt-system --create-namespace --wait \
+      --version 1.0.0-beta.2 --namespace kavrynt-system --create-namespace --wait \
       --set gateway.auth.enabled=false
     ```
 
@@ -59,7 +59,7 @@ Model Context Protocol (MCP) servers for AI agents, on any Kubernetes cluster.
 
     ```bash
     helm upgrade --install kavrynt oci://registry-1.docker.io/kavrynt/kavrynt \
-      --version 1.0.0-beta.1 --namespace kavrynt-system --create-namespace --wait \
+      --version 1.0.0-beta.2 --namespace kavrynt-system --create-namespace --wait \
       --set gateway.auth.resourceURL=https://mcp.example.com \
       --set-json 'gateway.auth.issuers=[{"issuer":"https://login.example.com/realms/agents"}]'
     ```
