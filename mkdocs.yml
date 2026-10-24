@@ -89,7 +89,8 @@ nav:
   - Home: index.md
   - Overview: overview.md
   - Get Started:
-      - Quickstart on Kind: quickstart.md
+      - Quickstart: quickstart.md
+      - "Test Kavrynt: a runbook": testing.md
       - Install on Kubernetes: installation.md
   - Architecture:
       - System Architecture: architecture.md

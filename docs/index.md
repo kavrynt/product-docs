@@ -4,7 +4,8 @@ Kavrynt is a Kubernetes-native control plane for MCP infrastructure. It gives
 platform teams one consistent way to register, discover, secure, and route
 Model Context Protocol (MCP) servers for AI agents, on any Kubernetes cluster.
 
-[Quickstart on Kind](quickstart.md){ .md-button .md-button--primary }
+[Quickstart](quickstart.md){ .md-button .md-button--primary }
+[Test Kavrynt](testing.md){ .md-button }
 [Read the overview](overview.md){ .md-button }
 
 ## What works today (`1.0.0-beta.2`)
@@ -41,13 +42,13 @@ Model Context Protocol (MCP) servers for AI agents, on any Kubernetes cluster.
 
 ## Try it
 
-=== "Local trial (Kind)"
+=== "Trial on any cluster"
 
     A trial has no authorization server, so it opts out of client
-    authentication explicitly:
+    authentication explicitly. Use any Kubernetes cluster: local (Kind, k3d,
+    minikube) or managed (EKS, AKS, GKE, OpenShift).
 
     ```bash
-    kind create cluster --name kavrynt-trial
     helm upgrade --install kavrynt oci://registry-1.docker.io/kavrynt/kavrynt \
       --version 1.0.0-beta.2 --namespace kavrynt-system --create-namespace --wait \
       --set gateway.auth.enabled=false
@@ -75,10 +76,19 @@ Model Context Protocol (MCP) servers for AI agents, on any Kubernetes cluster.
 
     ---
 
-    Install Kavrynt on Kind and route your first MCP server through the
-    Gateway.
+    Install Kavrynt on any Kubernetes cluster and call your first MCP tool
+    through the Gateway.
 
-    [:octicons-arrow-right-24: Quickstart on Kind](quickstart.md)
+    [:octicons-arrow-right-24: Quickstart](quickstart.md)
+
+-   :material-clipboard-check-outline:{ .lg .middle } __Test Kavrynt__
+
+    ---
+
+    A step-by-step runbook for developers: routing, the console, policy,
+    audit, your own MCP server, and how to send feedback.
+
+    [:octicons-arrow-right-24: Test Kavrynt](testing.md)
 
 -   :material-kubernetes:{ .lg .middle } __Install on Kubernetes__
 

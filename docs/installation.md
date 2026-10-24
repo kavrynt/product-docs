@@ -1,8 +1,8 @@
 # Install on Kubernetes
 
 Install Kavrynt `1.0.0-beta.2` on any conformant Kubernetes cluster: AKS, EKS,
-GKE, OpenShift, self-managed, or Kind. For a guided local trial, use the
-[Quickstart](quickstart.md).
+GKE, OpenShift, self-managed, or a local cluster. For a guided trial, use the
+[Quickstart](quickstart.md) or the [testing runbook](testing.md).
 
 ## Prerequisites
 
