@@ -94,6 +94,8 @@ nav:
   - Architecture:
       - System Architecture: architecture.md
       - MCP Concepts: concepts/mcp.md
+  - Security: security.md
+  - Operations: operations.md
   - Components:
       - Gateway: components/gateway.md
       - Operator: components/operator.md

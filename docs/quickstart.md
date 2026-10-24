@@ -1,22 +1,25 @@
 # Quickstart on Kind
 
-Run Kavrynt `0.0.3-beta.1` in a disposable local Kind cluster, register an MCP
-server, and route a request through the Gateway. No source access is needed:
-everything comes from published container images and the Helm chart.
+Run Kavrynt `1.0.0-beta.1` in a disposable local Kind cluster, register an MCP
+server, route a request through the Gateway, and open the console. No source
+access is needed: everything comes from published container images and the
+Helm chart.
 
 Time: about 10 minutes.
 
-!!! warning "Beta"
-    `0.0.3-beta.1` is for evaluation in trusted clusters. The Gateway does not
-    authenticate clients or enforce policy yet. See
-    [Current limitations](overview.md#current-limitations).
+!!! warning "A trial without authentication"
+    MCP client authentication is on by default. This trial has no
+    authorization server, so it installs with
+    `--set gateway.auth.enabled=false`: every MCP route then accepts
+    unauthenticated calls. Do this only in a disposable cluster. For a real
+    install, see [Install on Kubernetes](installation.md).
 
 ## Prerequisites
 
 - Docker
 - [Kind](https://kind.sigs.k8s.io/) 0.20 or newer
 - `kubectl` 1.29 or newer
-- [Helm](https://helm.sh/) 3.8 or newer (OCI chart support)
+- [Helm](https://helm.sh/) 3.14 or newer
 - `curl`
 
 ```bash
@@ -38,18 +41,20 @@ Expected: `kind-kavrynt-trial`.
 ## 2. Install Kavrynt
 
 ```bash
-export KAVRYNT_VERSION=0.0.3-beta.1
+export KAVRYNT_VERSION=1.0.0-beta.1
 
 helm upgrade --install kavrynt oci://registry-1.docker.io/kavrynt/kavrynt \
   --version "$KAVRYNT_VERSION" \
   --namespace kavrynt-system \
   --create-namespace \
+  --set gateway.auth.enabled=false \
   --wait --timeout 3m
 ```
 
 The chart installs the `MCPServer` CRD, the Operator, and the Gateway, pulling
 `docker.io/kavrynt/gateway` and `docker.io/kavrynt/operator` at the same
-version.
+version. Without `gateway.auth.enabled=false` or your authorization server's
+settings, the install stops with a message naming both.
 
 Check the runtime:
 
@@ -69,7 +74,8 @@ kavrynt-operator   1/1     1            1
 ## 3. Deploy a test backend
 
 This echo server proves routing. It is not an MCP implementation; any MCP
-server that speaks Streamable HTTP works the same way.
+server that speaks Streamable HTTP works the same way, and the Operator then
+lists its tools.
 
 ```bash
 kubectl create deployment example-mcp-server \
@@ -102,9 +108,13 @@ kubectl get mcpservers
 Expected:
 
 ```text
-NAME                 TRANSPORT   VERSION   READY   AGE
-example-mcp-server   http        0.1.0     True    5s
+NAME                 TRANSPORT   VERSION   REPORTED   READY   AGE
+example-mcp-server   http        0.1.0                True    5s
 ```
+
+`REPORTED` stays empty and `ToolsDiscovered` is `False` because the echo
+server does not speak MCP. A real MCP server shows its reported version, and
+its tools appear in `status.tools`.
 
 ## 5. Route a request through the Gateway
 
@@ -128,7 +138,20 @@ Expected route list (abridged) and proxied response:
 
 Routes are namespace-qualified: `/mcp/<namespace>.<name>`.
 
-## 6. Remove the server
+## 6. Open the console
+
+Open <http://127.0.0.1:18080/ui/> and sign in as `admin` with the password
+the chart generated:
+
+```bash
+kubectl -n kavrynt-system get secret kavrynt-gateway-console-admin \
+  -o jsonpath='{.data.password}' | base64 -d; echo
+```
+
+The console shows the server, its conditions, and the call you just made. It
+also warns that MCP routes are not authenticated.
+
+## 7. Remove the server
 
 ```bash
 kubectl delete mcpserver example-mcp-server
@@ -147,6 +170,8 @@ kind delete cluster --name kavrynt-trial
 
 ## Next steps
 
-- [Install on any Kubernetes cluster](installation.md)
+- [Install on any Kubernetes cluster](installation.md), with client
+  authentication
+- [Security](security.md): authentication, policy, audit, and credentials
 - [MCPServer reference](reference/mcpserver.md)
 - [Troubleshooting](troubleshooting.md)

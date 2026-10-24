@@ -28,17 +28,13 @@ When many teams run many MCP servers, teams need:
 - Approval and policy hooks
 - Audit history
 
-Kavrynt starts with discovery, registration, routing, and Kubernetes operation.
+Kavrynt provides discovery (the Operator lists each server's tools), stable
+routes, Kubernetes-native registration, client authentication, tool
+authorization policy, audit events, and runtime metrics.
 
 ## What Kavrynt Does Not Do Yet
 
-The MVP does not yet provide full enterprise governance. The following are
-planned areas:
-
-- Authentication and authorization
-- Hosted UI
-- Tenant isolation
-- Advanced policy enforcement
+- Approvals for high-risk tool calls
+- Hosted, cross-cluster inventory (Kavrynt Cloud)
 - Tool risk scoring
-- Durable audit storage
-
+- Durable audit storage (events go to standard output for your log pipeline)
