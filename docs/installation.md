@@ -1,6 +1,6 @@
 # Install on Kubernetes
 
-Install Kavrynt `1.0.0-beta.1` on any conformant Kubernetes cluster: AKS, EKS,
+Install Kavrynt `1.0.0-beta.2` on any conformant Kubernetes cluster: AKS, EKS,
 GKE, OpenShift, self-managed, or Kind. For a guided local trial, use the
 [Quickstart](quickstart.md).
 
@@ -26,9 +26,9 @@ helm version --short
 
 | Artifact | Reference |
 | --- | --- |
-| Helm chart | `oci://registry-1.docker.io/kavrynt/kavrynt` (or `oci://ghcr.io/kavrynt/charts/kavrynt`) version `1.0.0-beta.1` |
-| Gateway image | `docker.io/kavrynt/gateway:1.0.0-beta.1` (also `ghcr.io/kavrynt/gateway`) |
-| Operator image | `docker.io/kavrynt/operator:1.0.0-beta.1` (also `ghcr.io/kavrynt/operator`) |
+| Helm chart | `oci://registry-1.docker.io/kavrynt/kavrynt` (or `oci://ghcr.io/kavrynt/charts/kavrynt`) version `1.0.0-beta.2` |
+| Gateway image | `docker.io/kavrynt/gateway:1.0.0-beta.2` (also `ghcr.io/kavrynt/gateway`) |
+| Operator image | `docker.io/kavrynt/operator:1.0.0-beta.2` (also `ghcr.io/kavrynt/operator`) |
 
 Images are multi-architecture (`linux/amd64`, `linux/arm64`), distroless, run
 as non-root, and are signed with Sigstore Cosign (keyless). Verify a signature
@@ -37,9 +37,9 @@ with [Cosign](https://docs.sigstore.dev/cosign/system_config/installation/)
 
 ```bash
 cosign verify \
-  --certificate-identity "https://github.com/kavrynt/kavrynt/.github/workflows/release.yml@refs/tags/v1.0.0-beta.1" \
+  --certificate-identity "https://github.com/kavrynt/kavrynt/.github/workflows/release.yml@refs/tags/v1.0.0-beta.2" \
   --certificate-oidc-issuer https://token.actions.githubusercontent.com \
-  docker.io/kavrynt/gateway:1.0.0-beta.1
+  docker.io/kavrynt/gateway:1.0.0-beta.2
 ```
 
 ## Install
@@ -50,7 +50,7 @@ your authorization server or opt out.
 === "With your authorization server"
 
     ```bash
-    export KAVRYNT_VERSION=1.0.0-beta.1
+    export KAVRYNT_VERSION=1.0.0-beta.2
 
     helm upgrade --install kavrynt oci://registry-1.docker.io/kavrynt/kavrynt \
       --version "$KAVRYNT_VERSION" \
@@ -154,11 +154,11 @@ Both images should show the target version. Use `--reset-then-reuse-values`,
 not `--reuse-values`: `--reuse-values` keeps the previous chart's defaults,
 including its image tags.
 
-!!! warning "kavryctl upgrade 1.0.0-beta.1 keeps the old images"
-    `kavryctl upgrade` in `1.0.0-beta.1` runs `helm upgrade --reuse-values`.
-    That keeps the previous chart's defaults, including its image tags, so
-    the old images keep running. Until the next release, upgrade with Helm as
-    shown here. `kavryctl rollback` is not affected.
+Or let `kavryctl upgrade --version <target version>` (`kavryctl`
+`1.0.0-beta.2` or later) check the release, the version, and the CRD first,
+and report every server that is no longer routed afterwards. See
+[Operations](operations.md#upgrades-and-rollbacks).
+
 
 
 ### Upgrading from 0.0.5-beta.1 or earlier
@@ -167,7 +167,9 @@ including its image tags.
    and `gateway.auth.issuers`, or `--set gateway.auth.enabled=false`. Without
    either, the upgrade stops before changing anything.
 2. **Let the release adopt the CRD, once.** These releases installed it
-   outside Helm's control. Adopt it, then run the `helm upgrade` above:
+   outside Helm's control. Run
+   `kavryctl upgrade --version 1.0.0-beta.2 --adopt-crd`, or adopt it by hand
+   and then run the `helm upgrade` above:
 
     ```bash
     kubectl label crd mcpservers.kavrynt.io app.kubernetes.io/managed-by=Helm --overwrite

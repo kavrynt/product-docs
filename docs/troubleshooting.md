@@ -23,7 +23,8 @@ or, for a trial, `--set gateway.auth.enabled=false`.
 ## Upgrade fails naming `mcpservers.kavrynt.io`
 
 The CRD was installed by `0.0.5-beta.1` or earlier, outside Helm's control.
-Adopt it with the steps in
+Run `kavryctl upgrade --version <version> --adopt-crd`, or adopt it with the
+steps in
 [Upgrading from 0.0.5-beta.1](installation.md#upgrading-from-005-beta1-or-earlier),
 then upgrade again.
 
@@ -35,7 +36,7 @@ Error: ... failed to do request ... registry-1.docker.io
 
 - Use Helm 3.14 or newer (`helm version --short`).
 - Use the full OCI reference: `oci://registry-1.docker.io/kavrynt/kavrynt`
-  with `--version 1.0.0-beta.1`.
+  with `--version 1.0.0-beta.2`.
 - Behind a proxy, set `HTTPS_PROXY` for Helm.
 
 ## Pods stuck in `ImagePullBackOff`
@@ -50,8 +51,9 @@ Nodes must reach `docker.io`. For private mirrors, set
 ## Upgraded, but the old images still run
 
 You upgraded with `helm upgrade --reuse-values`, which keeps the previous
-chart's image tags (as `kavryctl upgrade` in `1.0.0-beta.1` does). Upgrade
-again with `helm upgrade --reset-then-reuse-values`.
+chart's image tags, as `kavryctl upgrade` in `1.0.0-beta.1` does. Upgrade
+again with `helm upgrade --reset-then-reuse-values`, or with `kavryctl upgrade`
+`1.0.0-beta.2` or later.
 
 ## `MCPServer` is not `Ready`
 
