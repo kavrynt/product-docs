@@ -12,8 +12,8 @@ The production profile runs:
 Start from it:
 
 ```bash
-curl -fsSLO https://raw.githubusercontent.com/kavrynt/kavrynt/v1.0.0-beta.2/examples/helm/values-production.yaml
-helm upgrade --install kavrynt oci://registry-1.docker.io/kavrynt/kavrynt --version 1.0.0-beta.2 \
+curl -fsSLO https://raw.githubusercontent.com/kavrynt/kavrynt/v1.0.0-beta.3/examples/helm/values-production.yaml
+helm upgrade --install kavrynt oci://registry-1.docker.io/kavrynt/kavrynt --version 1.0.0-beta.3 \
   -n kavrynt-system --create-namespace --values values-production.yaml \
   --set gateway.auth.resourceURL=https://mcp.example.com \
   --set-json 'gateway.auth.issuers=[{"issuer":"https://login.example.com/realms/agents"}]'
@@ -41,19 +41,26 @@ bodies, tool arguments, and results are never recorded.
 - `client_error`, `upstream_error`, `upstream_unreachable`, `timeout`,
   `incomplete`, `gateway_error`;
 - `unauthenticated`, `forbidden`, `auth_unavailable`, `denied`;
-- `credential_unavailable`, `exchange_failed`, `protocol_error`.
+- `credential_unavailable`, `exchange_failed`, `protocol_error`,
+  `session_not_found`.
 
 Prometheus discovers the Gateway through `prometheus.io/*` pod annotations by
 default. For the Prometheus Operator, set
 `gateway.metrics.serviceMonitor.enabled` and
 `operator.metrics.serviceMonitor.enabled`.
-`gateway.metrics.dashboard.enabled` adds the "Kavrynt MCP Traffic" Grafana
-dashboard for the Grafana sidecar.
+`gateway.metrics.dashboard.enabled` adds the "Kavrynt MCP Traffic" and
+"Kavrynt MCP Server" Grafana dashboards for the Grafana sidecar;
+`gateway.metrics.dashboard.extra` adds your own dashboards with the chart.
 
 The web console (`/ui/`) shows the same traffic for one Gateway replica:
 
-- servers and their tools;
+- servers and their tools, and why a server's tool discovery failed;
 - recent calls, per-tool error rates, and latency;
+- dashboards of the last 24 hours per route and tool, kept in the
+  replica's memory (`gateway.console.history.maxTools`; set
+  `gateway.console.grafanaURL` to link Grafana for cluster-wide history);
+- an Alerts page with the MCP server conditions of the alerts below, without
+  Prometheus;
 - a playground that calls tools through the Gateway.
 
 ## Alerts
@@ -69,10 +76,20 @@ Prometheus Operator CRDs. Each alert links to a runbook:
 | `KavryntMCPServerNotReady` | An `MCPServer` stays not `Ready` (default 10 min) |
 | `KavryntMCPUpstreamErrorsHigh` | Upstream errors on a route exceed 5% (default) |
 | `KavryntMCPLatencyHigh` | A route's p95 latency exceeds 5 s (default) |
+| `KavryntMCPToolErrorsHigh` | Over 20% (default) of a tool's calls end in a tool or JSON-RPC error |
+| `KavryntMCPToolDiscoveryFailing` | The Operator cannot list a `Ready` server's tools (default 15 min) |
 | `KavryntCloudSyncStale` | The Operator's Kavrynt Cloud sync is stale (only with the Cloud connector) |
+| `KavryntAuditDeliveryStale` | Audit events wait for Kavrynt Cloud (only with `gateway.audit.cloud.enabled`) |
 
 Thresholds are Helm values under `metrics.prometheusRule`. Runbooks:
 [`docs/runbooks`](https://github.com/kavrynt/kavrynt/tree/main/docs/runbooks).
+
+**Notifications.** `metrics.notifications.enabled=true` adds an
+`AlertmanagerConfig` that sends these alerts to Slack, email, Microsoft
+Teams, or a webhook. Webhook URLs and passwords come from Secrets you name
+(for example `metrics.notifications.slack.webhookSecret.name`), never from
+values. Set `metrics.notifications.labels` to match your Alertmanager's
+`alertmanagerConfigSelector`.
 
 ## Upgrades and rollbacks
 

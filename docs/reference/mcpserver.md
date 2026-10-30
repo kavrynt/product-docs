@@ -29,6 +29,8 @@ spec:
 | `environment` | no | Plain-text key/value pairs. Do not put secrets here. |
 | `credential` | no | The server needs a stored credential: `header` (default `Authorization`) and `scheme` (for example `Bearer`). The value lives in a Secret, never here. `http` only |
 | `tokenExchange` | no | The server gets the caller's token exchanged for its own: `audience` (required, absolute URI) and `scopes`. `http` only; not with `credential` |
+| `sessionAffinity` | no | `None` (default) or `MCPSession`: for an `http` endpoint that is a Service, each MCP session goes to the pod that started it. For stateful servers with several replicas |
+| `forwardSubpaths` | no | `true` forwards requests for paths below the endpoint; by default only the endpoint's own path is |
 
 `metadata.name` must be a lowercase DNS subdomain. `credential.header` must
 not be a header that frames or routes the request, `Cookie`, or an `Mcp-*`
@@ -39,7 +41,7 @@ header. See [Security](../security.md#credentials-for-mcp-servers).
 | Condition | `True` when | `False` reasons |
 | --- | --- | --- |
 | `Accepted` | The spec is valid | `InvalidSpec` |
-| `Ready` | Accepted, `transport: http`, and in a namespace the Gateway watches | `InvalidSpec`, `UnsupportedTransport`, `NamespaceNotWatched` |
+| `Ready` | Accepted, `transport: http`, in a namespace the Gateway watches, with an endpoint in scope | `InvalidSpec`, `UnsupportedTransport`, `NamespaceNotWatched`, `EndpointNotAllowed`, `AudienceNotAllowed` |
 | `ToolsDiscovered` | The Operator listed the server's tools (`Discovered`) | `DiscoveryFailed`, `NotRoutable`, `CredentialUnavailable`, `CallerTokenRequired` |
 
 `ToolsDiscovered` never changes `Ready`. The status also carries:
@@ -57,9 +59,12 @@ does not include the server's namespace. See
 
 ## Routing
 
-A `Ready` server is routed at `/mcp/<namespace>.<name>`. Path suffixes and
-query strings after the route name are appended to `spec.endpoint`. Path
-segments `.` and `..` are rejected.
+A `Ready` server is routed at `/mcp/<namespace>.<name>`. The Gateway forwards
+`POST`, `GET`, and `DELETE` to `spec.endpoint`; other methods get `405`. A
+path below the route name gets `404` unless `spec.forwardSubpaths` is
+`true`, which appends it to the endpoint. Path segments `.` and `..` are
+rejected. `EndpointNotAllowed` and `AudienceNotAllowed` are explained in
+[Endpoint scope](../security.md#endpoint-scope).
 
 ```bash
 kubectl get mcpservers -A

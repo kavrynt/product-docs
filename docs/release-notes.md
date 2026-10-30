@@ -1,5 +1,38 @@
 # Release Notes
 
+## 1.0.0-beta.3
+
+A public beta for development and evaluation clusters. Full notes:
+[GitHub release](https://github.com/kavrynt/kavrynt/releases/tag/v1.0.0-beta.3).
+
+**Action required: endpoint scope.** An `MCPServer` whose endpoint reaches
+another namespace (a Service name, a short name, or, with
+`global.endpoints.clusterCIDRs`, a cluster address) is no longer `Ready`
+(`EndpointNotAllowed`) unless `global.endpoints.crossNamespace` allows the
+pair, and a token exchange audience must be listed in
+`global.tokenExchangeAudiences` for its namespace (`AudienceNotAllowed`).
+The Gateway forwards only `POST`, `GET`, and `DELETE` to a route's own path;
+sub-paths need `spec.forwardSubpaths: true`. See
+[Endpoint scope](security.md#endpoint-scope).
+
+**Added**
+
+- Tool behavior hints in policy: the policy input carries the tool's
+  recorded MCP annotations (`tool_annotations`) and whether it was
+  discovered (`tool_discovered`).
+- MCP session affinity: `spec.sessionAffinity: MCPSession` sends each
+  session to the pod that started it, across Gateway replicas.
+- Discovery diagnostics: a failed tool discovery shows in `kubectl get` and
+  `kavryctl list`, with a message that names the cause.
+- Console alerts and dashboards: an Alerts page for MCP server conditions
+  and 24 hours of traffic per route and tool.
+- Alert notifications to Slack, email, Microsoft Teams, or a webhook
+  (`metrics.notifications`), and alerts for failing tools and failing tool
+  discovery.
+- A "Kavrynt MCP Server" Grafana dashboard, and your own dashboards from the
+  chart.
+- Console login limits behind a proxy (`gateway.console.auth.trustedProxies`).
+
 ## 1.0.0-beta.2
 
 **Fixed**

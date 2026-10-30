@@ -35,7 +35,7 @@ Customer MCP traffic stays inside the customer's cluster.
 
 | Offering | Scope | Status |
 | --- | --- | --- |
-| Kavrynt Runtime | Operator, Gateway with web console, `MCPServer` CRD, Helm chart, `kavryctl`, delivered as signed images and a chart | Beta (`1.0.0-beta.2`) |
+| Kavrynt Runtime | Operator, Gateway with web console, `MCPServer` CRD, Helm chart, `kavryctl`, delivered as signed images and a chart | Beta (`1.0.0-beta.3`) |
 | Kavrynt Cloud | Hosted inventory across clusters, SSO, RBAC, central policy, approvals, audit storage, usage | In development, not available |
 
 The runtime is open source under the
@@ -45,14 +45,16 @@ to `0.0.4-beta.1` remain under the Elastic License 2.0.
 
 ## Current limitations
 
-`1.0.0-beta.2` is a beta for development and staging clusters:
+`1.0.0-beta.3` is a beta for development and staging clusters:
 
 - **No approvals.** Policy allows or denies; it cannot hold a high-risk call
   for a human.
-- **Audit events go to standard output only.** Ship them with your log
-  pipeline; delivery to Kavrynt Cloud is not built.
+- **Audit events go to standard output.** Ship them with your log
+  pipeline. The Gateway can also deliver them to Kavrynt Cloud, which is not
+  available yet.
 - **`http` only.** Only the `http` transport is routed; `stdio` servers are
-  accepted but not routable.
+  accepted but not routable. Run a `stdio` server behind a Streamable HTTP
+  bridge in its own pod.
 - **Token exchange** authenticates the Gateway with a client secret
   (`client_secret_basic`) only.
 - **The console** has a single `admin` login, separate from MCP client
@@ -60,8 +62,10 @@ to `0.0.4-beta.1` remain under the Elastic License 2.0.
 
 ## Roadmap (planned, not implemented)
 
-1. Approvals for high-risk tool calls.
-2. The console signed in through your identity provider.
-3. Audit delivery to Kavrynt Cloud, and usage events.
-4. Alerts in the console, alert notifications, and custom dashboards.
-5. Kavrynt Cloud: cross-cluster inventory and central policy.
+1. One token for a group of MCP routes (the Gateway audience), in the next
+   release.
+2. Approvals for high-risk tool calls.
+3. The console signed in through your identity provider.
+4. An installation check that testers can share.
+5. Kavrynt Cloud: cross-cluster inventory, audit storage, and central
+   policy.

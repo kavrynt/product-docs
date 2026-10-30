@@ -8,7 +8,7 @@ Model Context Protocol (MCP) servers for AI agents, on any Kubernetes cluster.
 [Test Kavrynt](testing.md){ .md-button }
 [Read the overview](overview.md){ .md-button }
 
-## What works today (`1.0.0-beta.2`)
+## What works today (`1.0.0-beta.3`)
 
 - **Registration:** declare MCP servers as Kubernetes `MCPServer` resources,
   validated by the API server and the Operator. The Operator lists each
@@ -18,16 +18,21 @@ Model Context Protocol (MCP) servers for AI agents, on any Kubernetes cluster.
 - **Client authentication, on by default:** every MCP call needs an OAuth 2.1
   access token for its route from your authorization server.
 - **Tool authorization policy:** Rego policy in the Gateway decides every
-  call, and can hide the tools a caller may not use.
+  call, can use each tool's reported behavior hints, and can hide the tools a
+  caller may not use.
+- **Endpoint scope:** an `MCPServer` reaches only its own namespace unless
+  you allow a pair, so one team cannot route to another team's Services.
 - **Audit:** one hash-chained JSON event per MCP request, verified with
   `kavryctl audit verify`.
 - **Upstream credentials:** the Gateway sends MCP servers their own
   credential, or the caller's token exchanged for the server's audience. The
   caller's token never reaches the server.
 - **Operations:**
-  - a web console;
-  - Prometheus metrics, a Grafana dashboard, and alerts with runbooks;
-  - a tested high-availability profile;
+  - a web console with alerts and 24-hour dashboards;
+  - Prometheus metrics, Grafana dashboards, and alerts with runbooks, with
+    notifications to Slack, email, Teams, or a webhook;
+  - a tested high-availability profile, with MCP session affinity for
+    stateful servers;
   - NetworkPolicies that keep traffic on the Gateway;
   - checked upgrades and rollbacks with `kavryctl`.
 
@@ -50,7 +55,7 @@ Model Context Protocol (MCP) servers for AI agents, on any Kubernetes cluster.
 
     ```bash
     helm upgrade --install kavrynt oci://registry-1.docker.io/kavrynt/kavrynt \
-      --version 1.0.0-beta.2 --namespace kavrynt-system --create-namespace --wait \
+      --version 1.0.0-beta.3 --namespace kavrynt-system --create-namespace --wait \
       --set gateway.auth.enabled=false
     ```
 
@@ -60,7 +65,7 @@ Model Context Protocol (MCP) servers for AI agents, on any Kubernetes cluster.
 
     ```bash
     helm upgrade --install kavrynt oci://registry-1.docker.io/kavrynt/kavrynt \
-      --version 1.0.0-beta.2 --namespace kavrynt-system --create-namespace --wait \
+      --version 1.0.0-beta.3 --namespace kavrynt-system --create-namespace --wait \
       --set gateway.auth.resourceURL=https://mcp.example.com \
       --set-json 'gateway.auth.issuers=[{"issuer":"https://login.example.com/realms/agents"}]'
     ```
