@@ -36,7 +36,7 @@ Error: ... failed to do request ... registry-1.docker.io
 
 - Use Helm 3.14 or newer (`helm version --short`).
 - Use the full OCI reference: `oci://registry-1.docker.io/kavrynt/kavrynt`
-  with `--version 1.0.0-beta.2`.
+  with `--version 1.0.0-beta.3`.
 - Behind a proxy, set `HTTPS_PROXY` for Helm.
 
 ## Pods stuck in `ImagePullBackOff`

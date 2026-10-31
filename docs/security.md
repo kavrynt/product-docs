@@ -77,7 +77,7 @@ evaluation over 100 ms.
 
 ```bash
 kubectl -n kavrynt-system create configmap kavrynt-policy --from-file=authz.rego
-helm upgrade kavrynt oci://registry-1.docker.io/kavrynt/kavrynt --version 1.0.0-beta.2 \
+helm upgrade kavrynt oci://registry-1.docker.io/kavrynt/kavrynt --version 1.0.0-beta.3 \
   -n kavrynt-system --reset-then-reuse-values \
   --set gateway.policy.enabled=true --set gateway.policy.configMap=kavrynt-policy
 ```
@@ -100,7 +100,17 @@ decision := {"allow": true} if {
 | `subject`, `client_id`, `issuer`, `scopes` | The verified caller |
 | `route.namespace`, `route.name` | The `MCPServer` |
 | `http_method`, `mcp_method`, `tool` | What was asked; tool arguments are never part of the input |
+| `tool_annotations` | For `tools/call`, the MCP behavior hints the Operator recorded for the tool (`readOnlyHint`, `destructiveHint`, `idempotentHint`, `openWorldHint`), absent hints left out; `{}` otherwise |
+| `tool_discovered` | Whether the tool is among the server's tools from a successful discovery of its current spec |
 | `time` | Request time, RFC 3339, UTC |
+
+**Tool hints are the server's own claims,** so decide on them only for
+servers you trust, and write the policy to fail closed: allow on
+`tool_discovered` and `readOnlyHint == true`, and treat everything else as
+unknown. After a failed discovery every tool has `tool_annotations: {}` and
+`tool_discovered: false`, so a rule that only denies
+`destructiveHint == true` would let destructive tools through. MCP's default
+for an absent `destructiveHint` is `true`.
 
 **Responses and reloads:**
 
@@ -200,6 +210,33 @@ Ship the events out of the cluster with your log pipeline. With a full queue,
 the Gateway refuses new MCP requests by default (`503`), so no call is served
 without its record.
 
+## Endpoint scope
+
+An `MCPServer` may reach only its own namespace. The Operator reads the
+endpoint's host the way cluster DNS resolves it; one that reaches another
+namespace keeps the server not `Ready` with `EndpointNotAllowed`, and the
+Gateway does not route it. That covers Service names, short names, and,
+with `global.endpoints.clusterCIDRs` (your Service and Pod CIDRs), cluster
+IP addresses.
+
+```yaml
+global:
+  endpoints:
+    crossNamespace:
+      - {from: team-a, to: shared-tools}   # team-a's servers may use shared-tools Services
+    clusterCIDRs: [10.96.0.0/12, 10.244.0.0/16]
+  tokenExchangeAudiences:
+    team-a: [https://tickets.example.com]
+```
+
+A token exchange audience must be listed for the server's namespace
+(`"*"` for every namespace), or the server is not `Ready`
+(`AudienceNotAllowed`) and the Gateway exchanges nothing for it.
+
+The Gateway forwards only `POST`, `GET`, and `DELETE`, to the route's own
+path. A server that serves other paths below its endpoint needs
+`spec.forwardSubpaths: true`.
+
 ## Keeping traffic on the Gateway
 
 All of the above is skipped by a client that calls an MCP server's Service
@@ -218,3 +255,7 @@ password the chart generates into the Secret
 `kavrynt-gateway-console-admin`. It protects the console and the endpoints
 it reads. It is not MCP client authentication and never authorizes `/mcp/`
 calls.
+
+Failed logins are limited per client. Behind an Ingress or load balancer,
+set `gateway.console.auth.trustedProxies` to the proxies' CIDRs, so failures
+count against the client their `X-Forwarded-For` names, not the proxy.
