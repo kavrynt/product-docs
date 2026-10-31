@@ -128,8 +128,9 @@ rewritten where it was written. See [Audit events](security.md#audit-events).
 MCP traffic, tool calls, and policy decisions stay in your cluster, and
 nothing depends on a hosted service: the Kavrynt Cloud connectors are off
 unless you turn them on. The runtime is open source under the
-Apache License 2.0, with Cosign-signed multi-architecture images and one
-Helm chart.
+Apache License 2.0 at
+[github.com/kavrynt/kavrynt](https://github.com/kavrynt/kavrynt), with
+Cosign-signed multi-architecture images and one Helm chart.
 
 ## Where Kavrynt does not fit yet
 
