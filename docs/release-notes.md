@@ -68,6 +68,8 @@ sub-paths need `spec.forwardSubpaths: true`. See
 - A "Kavrynt MCP Server" Grafana dashboard, and your own dashboards from the
   chart.
 - Console login limits behind a proxy (`gateway.console.auth.trustedProxies`).
+- Audit delivery to Kavrynt Cloud (`gateway.audit.cloud`, off by default),
+  for when Kavrynt Cloud is available.
 
 ## 1.0.0-beta.2
 

@@ -108,6 +108,9 @@ schema and rejects unknown keys.
 | --- | --- | --- |
 | `gateway.auth.enabled` | `true` | MCP client authentication. `false` leaves every MCP route open |
 | `gateway.auth.resourceURL`, `gateway.auth.issuers`, `gateway.auth.requiredScopes` | none | Your Gateway URL, trusted authorization servers, and required scopes |
+| `gateway.auth.gatewayAudience.enabled`, `gateway.auth.gatewayAudience.routes` | `false`, `[]` | Listed routes also accept one token for the whole Gateway; see [Security](security.md#client-authentication) |
+| `global.endpoints.crossNamespace`, `global.endpoints.clusterCIDRs` | `[]`, `[]` | Namespace pairs whose servers may reach each other, and your cluster CIDRs; see [Endpoint scope](security.md#endpoint-scope) |
+| `global.tokenExchangeAudiences` | `{}` | Token exchange audiences allowed per namespace |
 | `gateway.policy.enabled`, `gateway.policy.configMap` | `false`, none | Tool authorization policy from a ConfigMap of `.rego` files |
 | `gateway.policy.filterToolsList` | `false` | List only the tools the policy lets each caller call |
 | `gateway.audit.enabled` | `false` | One audit event per MCP request on standard output |
@@ -115,6 +118,8 @@ schema and rejects unknown keys.
 | `gateway.auth.tokenExchangeSecret` | none | Secret with the Gateway's client secrets for token exchange |
 | `gateway.config.strictProtocol` | `true` | Refuse requests that are not well-formed MCP Streamable HTTP |
 | `gateway.console.enabled`, `gateway.console.auth.enabled` | `true`, `true` | The web console at `/ui/` and its admin login |
+| `gateway.console.auth.oidc.enabled` | `false` | Console sign-in through your OpenID Connect provider; see [the console login](security.md#the-console-login) |
+| `gateway.console.auth.trustedProxies` | `[]` | Proxies whose `X-Forwarded-For` the console login limits trust |
 | `global.watchNamespaces` | `[]` (all) | Limit the namespaces whose `MCPServer` resources are routed |
 | `gateway.config.allowedOrigins` | `[]` | Browser origins allowed besides loopback, for example an Ingress serving the console |
 | `gateway.config.stripRequestHeaders` | `[]` | Extra request headers never forwarded. `Authorization`, `Cookie`, and `Proxy-Authorization` are always removed |
@@ -122,8 +127,9 @@ schema and rejects unknown keys.
 | `gateway.replicaCount`, `operator.replicaCount` | `1`, `1` | Replicas; see [High availability](operations.md#high-availability) |
 | `networkPolicy.mcpServers.enabled`, `networkPolicy.gateway.enabled` | `false` | Keep MCP traffic on the Gateway; see [Security](security.md#keeping-traffic-on-the-gateway) |
 | `gateway.metrics.serviceMonitor.enabled`, `operator.metrics.serviceMonitor.enabled` | `false` | Prometheus Operator `ServiceMonitor`s |
-| `gateway.metrics.dashboard.enabled` | `false` | ConfigMap with the "Kavrynt MCP Traffic" Grafana dashboard |
+| `gateway.metrics.dashboard.enabled` | `false` | ConfigMaps with the "Kavrynt MCP Traffic" and "Kavrynt MCP Server" Grafana dashboards |
 | `metrics.prometheusRule.enabled` | `false` | Alerting rules with runbooks |
+| `metrics.notifications.enabled` | `false` | Send the alerts to Slack, email, Teams, or a webhook; see [Alerts](operations.md#alerts) |
 | `gateway.image.repository`, `operator.image.repository` | `kavrynt/gateway`, `kavrynt/operator` | Override for a private mirror |
 
 ## Security defaults
@@ -131,9 +137,9 @@ schema and rejects unknown keys.
 - Containers run as UID 65532 with a read-only root filesystem, no privilege
   escalation, all capabilities dropped, and the `RuntimeDefault` seccomp
   profile.
-- The Gateway can only `get`, `list`, and `watch` `MCPServer` resources. It
-  cannot write resources or read Secrets: Secrets it needs are mounted by the
-  kubelet.
+- The Gateway can only `get`, `list`, and `watch` `MCPServer` resources and
+  EndpointSlices (for session affinity). It cannot write resources or read
+  Secrets: Secrets it needs are mounted by the kubelet.
 - The Gateway is a `ClusterIP` service, and it never forwards the caller's
   `Authorization`, `Cookie`, or `Proxy-Authorization` to MCP servers.
 - Customer MCP traffic stays inside your cluster.

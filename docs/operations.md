@@ -34,6 +34,7 @@ bodies, tool arguments, and results are never recorded.
 | `kavrynt_gateway_mcp_request_duration_seconds` (histogram) | `route`, `method`, `tool`, `outcome` |
 | `kavrynt_gateway_mcp_bytes_total` | `route`, `direction` |
 | `kavrynt_operator_mcpserver_ready` | `namespace`, `name` |
+| `kavrynt_operator_mcpserver_tools_discovered` | `namespace`, `name` |
 
 `outcome` is one of the following:
 
@@ -129,8 +130,19 @@ changes within `v1alpha1` are additive.
 
 `MCPServer` resources are ordinary Kubernetes resources; back them up with
 your cluster backups or GitOps. Status is recomputed by the Operator and does
-not need restoring:
+not need restoring.
+
+To move registrations to a new or rebuilt cluster, export them as
+manifests and import them there:
 
 ```bash
-kubectl get mcpservers -A -o yaml > mcpservers-backup.yaml
+kavryctl export -A -o mcpservers.yaml
+# new cluster: install the chart, create the namespaces, and fill the
+# upstream credentials Secret with the keys the file names
+kavryctl import --dry-run mcpservers.yaml
+kavryctl import mcpservers.yaml
 ```
+
+Export leaves out status and Secrets, and redacts `spec.environment` values
+and `spec.args` unless you ask for them. Import checks every document before
+it writes any. See [export and import](reference/kavryctl.md#export-and-import).

@@ -2,7 +2,12 @@
 
 ## Check the basics
 
+Start with `kavryctl doctor`: it checks the CRD, the Gateway and Operator,
+their versions, client authentication, and every `MCPServer`, and says what
+to fix for each problem. See [doctor](reference/kavryctl.md#doctor).
+
 ```bash
+kavryctl doctor
 kubectl config current-context
 kubectl get deployments,pods -n kavrynt-system
 kubectl get events -n kavrynt-system --sort-by=.lastTimestamp | tail -20
@@ -66,6 +71,8 @@ kubectl describe mcpserver <name> -n <namespace>
 | `InvalidSpec` | The spec failed validation | Read the `Accepted` condition message and fix the spec |
 | `UnsupportedTransport` | `transport: stdio` | Expected: only `http` servers are routed |
 | `NamespaceNotWatched` | The namespace is not in `global.watchNamespaces` | Add the namespace to `global.watchNamespaces`, or move the server |
+| `EndpointNotAllowed` | The endpoint reaches another namespace | Point it at a Service in the server's own namespace, or allow the pair in `global.endpoints.crossNamespace`. See [Endpoint scope](security.md#endpoint-scope) |
+| `AudienceNotAllowed` | The `spec.tokenExchange` audience is not listed for the namespace | Add it to `global.tokenExchangeAudiences` for the namespace |
 | No conditions | Operator not running | `kubectl logs -n kavrynt-system deploy/kavrynt-operator` |
 
 ## No tools listed (`ToolsDiscovered=False`)
@@ -75,6 +82,10 @@ kubectl describe mcpserver <name> -n <namespace>
 | `DiscoveryFailed` | The Operator could not list tools; the message says why. `Ready` is unaffected, and the Operator retries |
 | `CredentialUnavailable` | The server declares `spec.credential`, and its key or `.origin` pin is missing from the upstream credentials Secret |
 | `CallerTokenRequired` | The server uses token exchange, so the Operator, which has no caller, does not list its tools |
+| `NotRoutable` | The server is not `Ready`, so its tools are not listed; fix `Ready` first |
+
+`kubectl get mcpservers` shows the reason in its `Discovery` column, and
+`kavryctl list` in `TOOLS`.
 
 ## MCP calls answer 401, 403, or 400
 
@@ -100,6 +111,13 @@ Use `http://` or `https://`, a host, and no `user:password@`.
 - Check the server is `Ready` and listed in `GET /v1/routes`.
 - If `global.watchNamespaces` is set, the namespace must be in it. The server's
   `Ready` condition then shows `NamespaceNotWatched`.
+- A path below the route, such as `/mcp/team-a.search/sse`, gets `404`
+  unless the server sets `spec.forwardSubpaths: true`. Methods other than
+  `POST`, `GET`, and `DELETE` get `405`.
+- `404` to a request with `Mcp-Session-Id` (outcome `session_not_found` in
+  metrics and audit events): the MCP session is gone, because the server
+  restarted or, with `spec.sessionAffinity: MCPSession`, the pod that started
+  it is gone. The client starts a new session.
 
 ## Gateway `/readyz` returns 503
 
