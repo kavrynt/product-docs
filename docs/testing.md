@@ -344,9 +344,11 @@ even if everything worked. It helps to include:
 
 - your Kubernetes platform and version, and the Kavrynt version;
 - which steps worked and which did not, with the command and its output;
-- for a problem, `kubectl get mcpservers -A -o yaml` and
-  `kubectl -n kavrynt-system logs deploy/kavrynt-gateway --tail=100`, with
-  secrets removed;
+- the output of `kavryctl doctor --anonymize`, which hashes names and never
+  includes endpoints or Secret data, so it is safe to paste into a public
+  issue;
+- for a problem, `kubectl -n kavrynt-system logs deploy/kavrynt-gateway --tail=100`,
+  with secrets removed;
 - what you would need before using Kavrynt for real.
 
 Report security vulnerabilities privately instead:

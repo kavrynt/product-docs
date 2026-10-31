@@ -110,6 +110,7 @@ decision := {"allow": true} if {
 | Input | Value |
 | --- | --- |
 | `subject`, `client_id`, `issuer`, `scopes` | The verified caller |
+| `audience` | `route` when the token is for the route's own audience, `gateway` when it was accepted for the [Gateway audience](#client-authentication) |
 | `route.namespace`, `route.name` | The `MCPServer` |
 | `http_method`, `mcp_method`, `tool` | What was asked; tool arguments are never part of the input |
 | `tool_annotations` | For `tools/call`, the MCP behavior hints the Operator recorded for the tool (`readOnlyHint`, `destructiveHint`, `idempotentHint`, `openWorldHint`), absent hints left out; `{}` otherwise |

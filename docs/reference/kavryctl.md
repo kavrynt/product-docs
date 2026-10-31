@@ -64,13 +64,16 @@ kavryctl rollback [--revision N]            # checked helm rollback
 Example `list` output:
 
 ```text
-NAMESPACE  NAME        VERSION  TRANSPORT  READY  ROUTE                 TOOLS  AGE
-team-a     payments    1.0.0    http       True   /mcp/team-a.payments  4      2m
-team-a     local-tool  1.0.0    stdio      False  -                     -      2m
+NAMESPACE  NAME        VERSION  TRANSPORT  READY  ROUTE                 TOOLS        AGE
+team-a     payments    1.0.0    http       True   /mcp/team-a.payments  4            2m
+team-a     local-tool  1.0.0    stdio      False  -                     NotRoutable  2m
 ```
 
 `ROUTE` shows `-` until the server is `Ready`, because the Gateway routes only
-`Ready` servers. `TOOLS` shows `-` until the Operator has listed the tools.
+`Ready` servers. `TOOLS` shows the number of tools once the Operator has
+listed them, the reason when it has not (such as `DiscoveryFailed` or
+`NotRoutable`), and `-` before the Operator has looked. In an empty
+namespace, `list` says which namespaces have servers.
 
 ### doctor
 

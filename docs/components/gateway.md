@@ -27,7 +27,8 @@ console.
 | `/mcp/<namespace>.<name>/...` | Proxied MCP traffic |
 | `/.well-known/oauth-protected-resource/mcp/<namespace>.<name>` | Protected Resource Metadata of a route (with client authentication) |
 | `/ui/` | Web console |
-| `/v1/servers`, `/v1/traffic`, `/v1/session` | Console data and login (need the console login) |
+| `/v1/servers`, `/v1/traffic`, `/v1/alerts`, `/v1/history` | Console data (need the console login) |
+| `/v1/session`, `/v1/session/oidc/start`, `/v1/session/oidc/callback` | Console login, and sign-in through your OpenID Connect provider |
 
 Every `/mcp/` response carries `X-Request-Id`, the request's audit event ID.
 
@@ -40,15 +41,21 @@ The console at `/ui/` shows:
 - a tools catalog;
 - recent traffic with per-tool error rates and latency, for the replica that
   answers;
+- an Alerts page with the MCP server conditions of the
+  [alerts](../operations.md#alerts), without Prometheus;
+- dashboards of the last 24 hours per route and tool, for the replica that
+  answers;
 - a playground that calls tools through the Gateway, with an access token
   when client authentication is on.
 
 It is read-only and never shows tool arguments.
 
 Sign in as `admin` with the password from the Secret
-`kavrynt-gateway-console-admin`. To serve the console through an Ingress, add
-its URL to `gateway.config.allowedOrigins`: the Gateway rejects browser
-requests from other origins.
+`kavrynt-gateway-console-admin`, or through your OpenID Connect provider with
+`gateway.console.auth.oidc` (see
+[the console login](../security.md#the-console-login)). To serve the console
+through an Ingress, add its URL to `gateway.config.allowedOrigins`: the
+Gateway rejects browser requests from other origins.
 
 ## Graceful shutdown
 

@@ -35,17 +35,18 @@ Kavrynt separates desired state (Kubernetes resources) from runtime traffic
 
 | Component | Role | Kubernetes access |
 | --- | --- | --- |
-| Operator | Validates `MCPServer` resources, writes status conditions, and lists each server's tools (MCP `tools/list`) into `status.tools` | Read and update `MCPServer` and its status; Leases and Events for leader election |
-| Gateway | Builds routes from `Ready` servers, enforces authentication and policy, writes audit events, proxies MCP requests, and serves the console | `get`, `list`, `watch` on `MCPServer` only; Secrets are mounted, never read through the API |
+| Operator | Validates `MCPServer` resources, checks endpoint scope, writes status conditions, and lists each server's tools (MCP `tools/list`) into `status.tools` | Read and update `MCPServer` and its status; `get` on Namespaces (endpoint scope); `list` on EndpointSlices (session affinity); Leases and Events for leader election |
+| Gateway | Builds routes from `Ready` servers, enforces authentication and policy, writes audit events, proxies MCP requests, and serves the console | `get`, `list`, `watch` on `MCPServer` and EndpointSlices (session affinity) only; Secrets are mounted, never read through the API |
 | `kavryctl` | Client CLI | Uses the caller's kubeconfig and RBAC |
 | Helm chart | Installs the CRD, Operator, and Gateway | — |
 
 ## Request path
 
 1. A client sends `POST /mcp/<namespace>.<name>` to the Gateway.
-2. **Client authentication:** the bearer token must be valid for this route,
-   or the answer is `401` or `403`. This runs before the route lookup, so a
-   `404` for an unknown route needs a valid token too.
+2. **Client authentication:** the bearer token must be valid for this route
+   (or, for routes listed in `gateway.auth.gatewayAudience`, for the whole
+   Gateway), or the answer is `401` or `403`. This runs before the route
+   lookup, so a `404` for an unknown route needs a valid token too.
 3. **MCP request checks:** a malformed request gets `400`.
 4. **Policy:** with a policy, a denied JSON-RPC request gets `200` with a
    JSON-RPC error; other denied requests get `403`.
@@ -54,7 +55,9 @@ Kavrynt separates desired state (Kubernetes resources) from runtime traffic
       (`Authorization`, `Cookie`, `Proxy-Authorization`);
     - it adds the server's stored credential or exchanged token, if the
       server declares one, and `X-Kavrynt-Route`;
-    - it forwards to `spec.endpoint`.
+    - it forwards to `spec.endpoint`, or, with
+      `spec.sessionAffinity: MCPSession`, to the pod that started the MCP
+      session.
 6. **The answer** returns without upstream `Set-Cookie`, sandboxed with
    `Content-Security-Policy`. With the policy's tool-list filter on, a
    `tools/list` answer is filtered first.
