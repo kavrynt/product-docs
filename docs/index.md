@@ -8,20 +8,22 @@ Model Context Protocol (MCP) servers for AI agents, on any Kubernetes cluster.
 [Test Kavrynt](testing.md){ .md-button }
 [Why Kavrynt](why-kavrynt.md){ .md-button }
 
-## What works today (`1.0.0-beta.4`)
+## What works today (`1.0.0-beta.5`)
 
 - **Registration:** declare MCP servers as Kubernetes `MCPServer` resources,
   validated by the API server and the Operator. The Operator lists each
   server's tools and reported version into its status.
 - **Routing:** MCP traffic goes through one Gateway at
-  `/mcp/<namespace>.<name>`, with MCP Streamable HTTP checks on every request.
+  `/mcp/<namespace>.<name>`, with MCP Streamable HTTP checks and a request
+  size limit on every request.
 - **Client authentication, on by default:** every MCP call needs an OAuth 2.1
   access token for its route from your authorization server.
 - **Tool authorization policy:** Rego policy in the Gateway decides every
   call, can use each tool's reported behavior hints, and can hide the tools a
   caller may not use.
-- **Endpoint scope:** an `MCPServer` reaches only its own namespace unless
-  you allow a pair, so one team cannot route to another team's Services.
+- **Endpoint scope:** an `MCPServer` whose endpoint names a Service in
+  another namespace is not routed unless you allow the pair (see its
+  [limitation](security.md#endpoint-scope)).
 - **One token for many servers:** optionally, listed routes accept a token
   for the whole Gateway, so an agent needs one audience instead of one per
   route.
@@ -61,7 +63,7 @@ Model Context Protocol (MCP) servers for AI agents, on any Kubernetes cluster.
 
     ```bash
     helm upgrade --install kavrynt oci://registry-1.docker.io/kavrynt/kavrynt \
-      --version 1.0.0-beta.4 --namespace kavrynt-system --create-namespace --wait \
+      --version 1.0.0-beta.5 --namespace kavrynt-system --create-namespace --wait \
       --set gateway.auth.enabled=false
     ```
 
@@ -71,7 +73,7 @@ Model Context Protocol (MCP) servers for AI agents, on any Kubernetes cluster.
 
     ```bash
     helm upgrade --install kavrynt oci://registry-1.docker.io/kavrynt/kavrynt \
-      --version 1.0.0-beta.4 --namespace kavrynt-system --create-namespace --wait \
+      --version 1.0.0-beta.5 --namespace kavrynt-system --create-namespace --wait \
       --set gateway.auth.resourceURL=https://mcp.example.com \
       --set-json 'gateway.auth.issuers=[{"issuer":"https://login.example.com/realms/agents"}]'
     ```

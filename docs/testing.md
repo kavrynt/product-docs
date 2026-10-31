@@ -59,7 +59,7 @@ kubectl auth can-i create customresourcedefinitions   # expect: yes
 ## 2. Install Kavrynt
 
 ```bash
-export KAVRYNT_VERSION=1.0.0-beta.4
+export KAVRYNT_VERSION=1.0.0-beta.5
 
 helm upgrade --install kavrynt oci://registry-1.docker.io/kavrynt/kavrynt \
   --version "$KAVRYNT_VERSION" \
@@ -271,8 +271,8 @@ answer `HTTP 403` with the same body.
 chained with SHA-256. Install `kavryctl` and verify the chain:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/kavrynt/kavrynt/v1.0.0-beta.4/scripts/install.sh \
-  | KAVRYNT_VERSION=v1.0.0-beta.4 sh
+curl -fsSL https://raw.githubusercontent.com/kavrynt/kavrynt/v1.0.0-beta.5/scripts/install.sh \
+  | KAVRYNT_VERSION=v1.0.0-beta.5 sh
 export PATH="$HOME/.kavrynt/bin:$PATH"
 
 kubectl -n kavrynt-system logs -l app.kubernetes.io/name=gateway --prefix=false --tail=-1 \
