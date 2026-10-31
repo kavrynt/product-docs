@@ -31,6 +31,9 @@ AI agent with an access token
 
 Customer MCP traffic stays inside the customer's cluster.
 
+For the design choices behind this, and how they differ from a gateway
+alone, see [Why Kavrynt](why-kavrynt.md).
+
 ## Product shape
 
 | Offering | Scope | Status |
