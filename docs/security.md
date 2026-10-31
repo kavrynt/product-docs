@@ -50,6 +50,18 @@ Resource Metadata (RFC 9728), at
 authorization server. The token is removed before forwarding and never
 logged.
 
+**One token for many routes (the Gateway audience).** Each route has its
+own audience, so an agent that calls ten MCP servers needs a token for all
+ten. With `gateway.auth.gatewayAudience.enabled=true`, the routes in
+`gateway.auth.gatewayAudience.routes` (names like `team-a.search` or
+patterns like `team-a.*`, never `*`) also accept a token whose `aud` is the
+Gateway's `resourceURL`. A token for a route's own audience still works, and
+every other check still applies. Policy input and audit events say which
+audience a call used (`route` or `gateway`), so a policy can require a
+route's own audience for sensitive servers. A leaked Gateway-audience token
+reaches every listed route: list only what one token should reach. The
+Gateway warns at start, and the console names the routes.
+
 `gateway.auth.enabled=false` turns authentication off. Every route is then
 open to anyone who can reach the Gateway. The Gateway logs a warning at start,
 and the console shows that MCP routes are not authenticated.
@@ -77,7 +89,7 @@ evaluation over 100 ms.
 
 ```bash
 kubectl -n kavrynt-system create configmap kavrynt-policy --from-file=authz.rego
-helm upgrade kavrynt oci://registry-1.docker.io/kavrynt/kavrynt --version 1.0.0-beta.3 \
+helm upgrade kavrynt oci://registry-1.docker.io/kavrynt/kavrynt --version 1.0.0-beta.4 \
   -n kavrynt-system --reset-then-reuse-values \
   --set gateway.policy.enabled=true --set gateway.policy.configMap=kavrynt-policy
 ```
@@ -114,8 +126,9 @@ for an absent `destructiveHint` is `true`.
 
 **Responses and reloads:**
 
-- A denied call gets `403` with a JSON-RPC error,
-  `denied by policy: <reason>`.
+- A denied JSON-RPC request gets `200` with a JSON-RPC error,
+  `denied by policy: <reason>`, so MCP client SDKs show the agent the
+  reason. Other denied requests get `403`.
 - A policy update is picked up within seconds of the kubelet updating the
   mount.
 - An update that does not compile is counted, and the previous policy stays
@@ -255,6 +268,24 @@ password the chart generates into the Secret
 `kavrynt-gateway-console-admin`. It protects the console and the endpoints
 it reads. It is not MCP client authentication and never authorizes `/mcp/`
 calls.
+
+**Sign-in through your identity provider.** With
+`gateway.console.auth.oidc.enabled`, people sign in with your OpenID Connect
+provider instead of the shared password, and only the subjects in
+`allowedSubjects` or members of `allowedGroups` get a session:
+
+- Register a confidential client whose redirect URL is
+  `https://<gateway host>/v1/session/oidc/callback`, and put its secret in
+  the Secret named by `gateway.console.auth.oidc.clientSecret`.
+- The Gateway uses PKCE, `state`, and `nonce`, and verifies the ID token's
+  signature, issuer, times, audience, and nonce. It never keeps, logs, or
+  returns the code or any token.
+- The admin password stops working unless
+  `gateway.console.auth.oidc.keepAdminLogin` keeps it as a break-glass login.
+- When people open the console at an address other than loopback, add that
+  origin to `gateway.config.allowedOrigins`.
+
+There are no roles within the console.
 
 Failed logins are limited per client. Behind an Ingress or load balancer,
 set `gateway.console.auth.trustedProxies` to the proxies' CIDRs, so failures

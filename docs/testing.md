@@ -59,7 +59,7 @@ kubectl auth can-i create customresourcedefinitions   # expect: yes
 ## 2. Install Kavrynt
 
 ```bash
-export KAVRYNT_VERSION=1.0.0-beta.3
+export KAVRYNT_VERSION=1.0.0-beta.4
 
 helm upgrade --install kavrynt oci://registry-1.docker.io/kavrynt/kavrynt \
   --version "$KAVRYNT_VERSION" \
@@ -249,7 +249,7 @@ helm upgrade kavrynt oci://registry-1.docker.io/kavrynt/kavrynt --version "$KAVR
 The Gateway restarts, so start the port-forward from step 4 again. Then:
 
 ```bash
-# admin_reset is denied with 403 and a JSON-RPC error
+# admin_reset is denied with a JSON-RPC error
 curl -s -w ' HTTP %{http_code}\n' -X POST "$GW" -H 'Content-Type: application/json' -H 'MCP-Protocol-Version: 2025-06-18' \
   --data '{"jsonrpc":"2.0","id":5,"method":"tools/call","params":{"name":"admin_reset","arguments":{}}}'
 
@@ -263,14 +263,16 @@ curl -s -X POST "$GW" -H 'Content-Type: application/json' -H 'MCP-Protocol-Versi
 ```
 
 Expected for the denied call:
-`{"error":{"code":-32001,"message":"denied by policy: admin tools are not allowed"},...} HTTP 403`.
+`{"error":{"code":-32001,"message":"denied by policy: admin tools are not allowed"},...} HTTP 200`.
+MCP client SDKs show the agent that message. Releases up to 1.0.0-beta.3
+answer `HTTP 403` with the same body.
 
 **Audit:** every MCP request is now one JSON line on the Gateway's output,
 chained with SHA-256. Install `kavryctl` and verify the chain:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/kavrynt/kavrynt/v1.0.0-beta.3/scripts/install.sh \
-  | KAVRYNT_VERSION=v1.0.0-beta.3 sh
+curl -fsSL https://raw.githubusercontent.com/kavrynt/kavrynt/v1.0.0-beta.4/scripts/install.sh \
+  | KAVRYNT_VERSION=v1.0.0-beta.4 sh
 export PATH="$HOME/.kavrynt/bin:$PATH"
 
 kubectl -n kavrynt-system logs -l app.kubernetes.io/name=gateway --prefix=false --tail=-1 \

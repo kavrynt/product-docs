@@ -8,7 +8,7 @@ Model Context Protocol (MCP) servers for AI agents, on any Kubernetes cluster.
 [Test Kavrynt](testing.md){ .md-button }
 [Read the overview](overview.md){ .md-button }
 
-## What works today (`1.0.0-beta.3`)
+## What works today (`1.0.0-beta.4`)
 
 - **Registration:** declare MCP servers as Kubernetes `MCPServer` resources,
   validated by the API server and the Operator. The Operator lists each
@@ -22,19 +22,25 @@ Model Context Protocol (MCP) servers for AI agents, on any Kubernetes cluster.
   caller may not use.
 - **Endpoint scope:** an `MCPServer` reaches only its own namespace unless
   you allow a pair, so one team cannot route to another team's Services.
+- **One token for many servers:** optionally, listed routes accept a token
+  for the whole Gateway, so an agent needs one audience instead of one per
+  route.
 - **Audit:** one hash-chained JSON event per MCP request, verified with
   `kavryctl audit verify`.
 - **Upstream credentials:** the Gateway sends MCP servers their own
   credential, or the caller's token exchanged for the server's audience. The
   caller's token never reaches the server.
 - **Operations:**
-  - a web console with alerts and 24-hour dashboards;
+  - a web console with alerts and 24-hour dashboards, signed in through
+    your OpenID Connect provider or a generated admin password;
   - Prometheus metrics, Grafana dashboards, and alerts with runbooks, with
     notifications to Slack, email, Teams, or a webhook;
   - a tested high-availability profile, with MCP session affinity for
     stateful servers;
   - NetworkPolicies that keep traffic on the Gateway;
-  - checked upgrades and rollbacks with `kavryctl`.
+  - checked upgrades and rollbacks with `kavryctl`;
+  - `kavryctl doctor` to check an installation, and `kavryctl export` and
+    `import` to move registrations to a rebuilt cluster.
 
 ## Components
 
@@ -42,7 +48,7 @@ Model Context Protocol (MCP) servers for AI agents, on any Kubernetes cluster.
 | --- | --- |
 | Operator | Validates `MCPServer` resources, reports `Accepted` and `Ready`, and discovers their tools. |
 | Gateway | Authenticates, checks, authorizes, audits, and proxies MCP traffic to `Ready` servers. Serves the web console. |
-| `kavryctl` | CLI to validate and register servers, verify audit chains, and upgrade or roll back Kavrynt. |
+| `kavryctl` | CLI to validate and register servers, check an installation, export and import registrations, verify audit chains, and upgrade or roll back Kavrynt. |
 | Helm chart | Installs the CRD, the Operator, and the Gateway. |
 
 ## Try it
@@ -55,7 +61,7 @@ Model Context Protocol (MCP) servers for AI agents, on any Kubernetes cluster.
 
     ```bash
     helm upgrade --install kavrynt oci://registry-1.docker.io/kavrynt/kavrynt \
-      --version 1.0.0-beta.3 --namespace kavrynt-system --create-namespace --wait \
+      --version 1.0.0-beta.4 --namespace kavrynt-system --create-namespace --wait \
       --set gateway.auth.enabled=false
     ```
 
@@ -65,7 +71,7 @@ Model Context Protocol (MCP) servers for AI agents, on any Kubernetes cluster.
 
     ```bash
     helm upgrade --install kavrynt oci://registry-1.docker.io/kavrynt/kavrynt \
-      --version 1.0.0-beta.3 --namespace kavrynt-system --create-namespace --wait \
+      --version 1.0.0-beta.4 --namespace kavrynt-system --create-namespace --wait \
       --set gateway.auth.resourceURL=https://mcp.example.com \
       --set-json 'gateway.auth.issuers=[{"issuer":"https://login.example.com/realms/agents"}]'
     ```
