@@ -47,7 +47,8 @@ Kavrynt separates desired state (Kubernetes resources) from runtime traffic
    or the answer is `401` or `403`. This runs before the route lookup, so a
    `404` for an unknown route needs a valid token too.
 3. **MCP request checks:** a malformed request gets `400`.
-4. **Policy:** with a policy, a denied call gets `403`.
+4. **Policy:** with a policy, a denied JSON-RPC request gets `200` with a
+   JSON-RPC error; other denied requests get `403`.
 5. **Forwarding:**
     - the Gateway removes hop-by-hop headers and caller credentials
       (`Authorization`, `Cookie`, `Proxy-Authorization`);

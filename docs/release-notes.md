@@ -1,5 +1,41 @@
 # Release Notes
 
+## 1.0.0-beta.4
+
+A public beta for development and evaluation clusters. Full notes:
+[GitHub release](https://github.com/kavrynt/kavrynt/releases/tag/v1.0.0-beta.4).
+
+**Changed: policy denials.** A JSON-RPC request the tool authorization
+policy denies now gets `200` with the JSON-RPC error
+(`denied by policy: <reason>`), so MCP client SDKs show the agent the
+reason. Other denied requests still get `403`.
+
+**Added**
+
+- `kavryctl doctor`: a read-only check of the installation (CRD, Gateway and
+  Operator, versions, client authentication, and every `MCPServer`'s
+  readiness and tool discovery), with a fix and a link for each problem.
+  `--anonymize` makes the report safe to paste into a public issue.
+- `kavryctl export` and `import`: move `MCPServer` registrations to a new or
+  rebuilt cluster. Environment values and arguments are redacted unless you
+  ask for them, and `import` checks every document before writing any.
+- Console sign-in through your OpenID Connect provider
+  (`gateway.console.auth.oidc`), for listed users or groups, instead of the
+  shared `admin` password.
+- The Gateway audience (`gateway.auth.gatewayAudience`): listed routes also
+  accept one token for the whole Gateway, so an agent that calls many MCP
+  servers needs one audience instead of one per route. Off by default.
+- `kavryctl list` in an empty namespace says which namespaces have servers.
+
+**Fixed**
+
+- `kavryctl audit verify` accepts events from newer Gateways that carry
+  fields it does not know, and treats unknown or repeated fields as
+  altered unless the line verifies exactly as written.
+- The `stdio` bridge example keeps one session per client (`--stateful`).
+- The `deny-destructive-tools` policy example trusts tool hints only from
+  the servers it lists.
+
 ## 1.0.0-beta.3
 
 A public beta for development and evaluation clusters. Full notes:

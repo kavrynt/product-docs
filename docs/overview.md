@@ -35,7 +35,7 @@ Customer MCP traffic stays inside the customer's cluster.
 
 | Offering | Scope | Status |
 | --- | --- | --- |
-| Kavrynt Runtime | Operator, Gateway with web console, `MCPServer` CRD, Helm chart, `kavryctl`, delivered as signed images and a chart | Beta (`1.0.0-beta.3`) |
+| Kavrynt Runtime | Operator, Gateway with web console, `MCPServer` CRD, Helm chart, `kavryctl`, delivered as signed images and a chart | Beta (`1.0.0-beta.4`) |
 | Kavrynt Cloud | Hosted inventory across clusters, SSO, RBAC, central policy, approvals, audit storage, usage | In development, not available |
 
 The runtime is open source under the
@@ -45,7 +45,7 @@ to `0.0.4-beta.1` remain under the Elastic License 2.0.
 
 ## Current limitations
 
-`1.0.0-beta.3` is a beta for development and staging clusters:
+`1.0.0-beta.4` is a beta for development and staging clusters:
 
 - **No approvals.** Policy allows or denies; it cannot hold a high-risk call
   for a human.
@@ -57,15 +57,13 @@ to `0.0.4-beta.1` remain under the Elastic License 2.0.
   bridge in its own pod.
 - **Token exchange** authenticates the Gateway with a client secret
   (`client_secret_basic`) only.
-- **The console** has a single `admin` login, separate from MCP client
-  authentication.
+- **The console** has no roles: everyone who signs in sees the same views.
+  Its login is separate from MCP client authentication.
 
 ## Roadmap (planned, not implemented)
 
-1. One token for a group of MCP routes (the Gateway audience), in the next
-   release.
-2. Approvals for high-risk tool calls.
-3. The console signed in through your identity provider.
-4. An installation check that testers can share.
-5. Kavrynt Cloud: cross-cluster inventory, audit storage, and central
+1. Approvals for high-risk tool calls.
+2. More installation checks in `kavryctl doctor` (policy, audit, and
+   NetworkPolicy settings).
+3. Kavrynt Cloud: cross-cluster inventory, audit storage, and central
    policy.
