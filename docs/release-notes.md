@@ -1,5 +1,44 @@
 # Release Notes
 
+## 1.0.0-beta.5
+
+A public beta for development and evaluation clusters. Full notes:
+[GitHub release](https://github.com/kavrynt/kavrynt/releases/tag/v1.0.0-beta.5).
+
+**Action required if clients send large requests: request size limit.**
+Every request body to an MCP route is now limited to 4 MiB
+(`gateway.config.maxRequestBytes`). A larger `Content-Length` gets `413`
+before anything reaches the MCP server; a body without a length is
+forwarded up to the limit and then cut with `413`. Raise the value if your
+agents send larger tool arguments.
+
+**Added**
+
+- The request size limit above, counted as `client_error` in the metrics
+  and audited as `invalid`, with a message that names the chart value.
+- A sign-in page in the Kavrynt theme: the sign-in card alone under the
+  logo, with the navigation hidden until you sign in, in light and dark.
+
+**Fixed**
+
+- The Operator drops control characters (other than newline and tab) from
+  tool descriptions and input schemas, so an MCP server cannot send
+  terminal escape sequences to whoever runs `kubectl describe mcpserver`.
+  Found in the pre-release penetration test.
+- The console's password fields (sign-in and the Playground's access token)
+  look like the other fields; signed-out text stays readable in the light
+  theme; keyboard focus moves to the sign-in page after you log out.
+
+**Known limitations** (from the pre-release penetration test)
+
+- Endpoint scope judges an endpoint by its host name, so a Service in the
+  server's own namespace that forwards elsewhere (an `ExternalName`
+  Service, or a Service without a selector whose EndpointSlices list
+  another namespace's pods) can reach another namespace. See
+  [Endpoint scope](security.md#endpoint-scope) for the mitigation.
+- **Log out** removes the console session cookie from that browser only. To
+  end every session, change the console password.
+
 ## 1.0.0-beta.4
 
 A public beta for development and evaluation clusters. Full notes:

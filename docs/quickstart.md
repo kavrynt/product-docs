@@ -1,6 +1,6 @@
 # Quickstart
 
-Run Kavrynt `1.0.0-beta.4` on any Kubernetes cluster, register an MCP server,
+Run Kavrynt `1.0.0-beta.5` on any Kubernetes cluster, register an MCP server,
 call its tools through the Gateway, and open the console. Everything comes
 from published, signed images and the Helm chart; you build nothing.
 
@@ -53,7 +53,7 @@ kubectl auth can-i create customresourcedefinitions   # expect: yes
 ## 2. Install Kavrynt
 
 ```bash
-export KAVRYNT_VERSION=1.0.0-beta.4
+export KAVRYNT_VERSION=1.0.0-beta.5
 
 helm upgrade --install kavrynt oci://registry-1.docker.io/kavrynt/kavrynt \
   --version "$KAVRYNT_VERSION" \
