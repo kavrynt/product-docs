@@ -36,7 +36,26 @@ bodies, tool arguments, and results are never recorded.
 | `kavrynt_operator_mcpserver_ready` | `namespace`, `name` |
 | `kavrynt_operator_mcpserver_tools_discovered` | `namespace`, `name` |
 
-`outcome` is one of the following:
+The Gateway and the Operator also report their own health:
+
+| Metric | Labels |
+| --- | --- |
+| `kavrynt_gateway_requests_total`, `kavrynt_gateway_proxied_requests_total` | none |
+| `kavrynt_gateway_stripped_credential_requests_total` | none; proxied requests whose caller credentials were removed |
+| `kavrynt_gateway_routes` | none; routes served now |
+| `kavrynt_gateway_route_sync_success_total`, `kavrynt_gateway_route_sync_failure_total` | none |
+| `kavrynt_gateway_policy_decisions_total` | `result` (`allow`, `deny`, `error`); with a policy |
+| `kavrynt_gateway_policy_load_failures_total` | none; with a policy |
+| `kavrynt_gateway_policy_info` | `revision` of the active policy; with a policy |
+| `kavrynt_gateway_policy_filtered_tools_total` | `route`; with `gateway.policy.filterToolsList` |
+| `kavrynt_gateway_audit_events_total`, `kavrynt_gateway_audit_queue_length` | none; with audit on |
+| `kavrynt_gateway_audit_overflow_total` | `action` (`reject`, `drop`); with audit on |
+| `kavrynt_gateway_audit_delivery_total` | `result`; with audit delivery to Kavrynt Cloud |
+| `kavrynt_gateway_audit_delivery_buffer_length`, `kavrynt_gateway_audit_delivery_dropped_total`, `kavrynt_gateway_audit_delivery_last_success_timestamp_seconds` | none; with audit delivery |
+| `kavrynt_operator_cloud_sync_success_total`, `kavrynt_operator_cloud_sync_last_success_timestamp_seconds` | none; with the Cloud connector |
+| `kavrynt_operator_cloud_sync_failure_total` | `reason`; with the Cloud connector |
+
+In the MCP request metrics, `outcome` is one of the following:
 
 - `ok`, `tool_error`, `rpc_error`;
 - `client_error`, `upstream_error`, `upstream_unreachable`, `timeout`,

@@ -6,7 +6,7 @@ Model Context Protocol (MCP) servers for AI agents, on any Kubernetes cluster.
 
 [Quickstart](quickstart.md){ .md-button .md-button--primary }
 [Test Kavrynt](testing.md){ .md-button }
-[Read the overview](overview.md){ .md-button }
+[Why Kavrynt](why-kavrynt.md){ .md-button }
 
 ## What works today (`1.0.0-beta.4`)
 
@@ -82,6 +82,15 @@ Model Context Protocol (MCP) servers for AI agents, on any Kubernetes cluster.
 ## Where to go next
 
 <div class="grid cards" markdown>
+
+-   :material-lightbulb-outline:{ .lg .middle } __Why Kavrynt__
+
+    ---
+
+    What sets a Kubernetes control plane for MCP apart from a gateway alone,
+    and where Kavrynt does not fit yet.
+
+    [:octicons-arrow-right-24: Why Kavrynt](why-kavrynt.md)
 
 -   :material-rocket-launch-outline:{ .lg .middle } __Quickstart__
 
