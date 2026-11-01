@@ -62,7 +62,8 @@ call used. See [Client authentication](security.md#client-authentication).
 - **No call without its record.** With audit on, a full audit queue refuses
   new MCP requests instead of serving them unrecorded.
 - **Strict MCP checks.** Requests that are not well-formed MCP Streamable
-  HTTP get `400` before they reach a server.
+  HTTP get `400` before they reach a server, and bodies over the request
+  size limit (4 MiB by default) get `413`.
 
 ## Decisions on tools, not just routes
 
@@ -91,9 +92,10 @@ rewritten where it was written. See [Audit events](security.md#audit-events).
 
 ## Team boundaries in shared clusters
 
-- **Endpoint scope.** An `MCPServer` reaches only Services in its own
-  namespace unless the platform team allows the pair, so one team cannot
-  route the Gateway to another team's workloads. See
+- **Endpoint scope.** An `MCPServer` whose endpoint names a Service in
+  another namespace is not routed unless the platform team allows the pair.
+  It judges the host name, so a Service in the team's own namespace that
+  forwards elsewhere needs RBAC or an egress policy too; see
   [Endpoint scope](security.md#endpoint-scope).
 - **Egress checks.** The Gateway and the Operator refuse link-local, cloud
   metadata, and loopback addresses when they connect, and the Gateway passes
@@ -134,7 +136,7 @@ Cosign-signed multi-architecture images and one Helm chart.
 
 ## Where Kavrynt does not fit yet
 
-Kavrynt `1.0.0-beta.4` is a beta for development and staging clusters. Choose
+Kavrynt `1.0.0-beta.5` is a beta for development and staging clusters. Choose
 something else, or wait, if you need:
 
 - **MCP over stdio routed directly.** Only `http` servers are routed; run a

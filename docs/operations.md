@@ -12,8 +12,8 @@ The production profile runs:
 Start from it:
 
 ```bash
-curl -fsSLO https://raw.githubusercontent.com/kavrynt/kavrynt/v1.0.0-beta.4/examples/helm/values-production.yaml
-helm upgrade --install kavrynt oci://registry-1.docker.io/kavrynt/kavrynt --version 1.0.0-beta.4 \
+curl -fsSLO https://raw.githubusercontent.com/kavrynt/kavrynt/v1.0.0-beta.5/examples/helm/values-production.yaml
+helm upgrade --install kavrynt oci://registry-1.docker.io/kavrynt/kavrynt --version 1.0.0-beta.5 \
   -n kavrynt-system --create-namespace --values values-production.yaml \
   --set gateway.auth.resourceURL=https://mcp.example.com \
   --set-json 'gateway.auth.issuers=[{"issuer":"https://login.example.com/realms/agents"}]'

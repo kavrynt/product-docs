@@ -41,7 +41,7 @@ Error: ... failed to do request ... registry-1.docker.io
 
 - Use Helm 3.14 or newer (`helm version --short`).
 - Use the full OCI reference: `oci://registry-1.docker.io/kavrynt/kavrynt`
-  with `--version 1.0.0-beta.4`.
+  with `--version 1.0.0-beta.5`.
 - Behind a proxy, set `HTTPS_PROXY` for Helm.
 
 ## Pods stuck in `ImagePullBackOff`
@@ -95,6 +95,7 @@ kubectl describe mcpserver <name> -n <namespace>
 | `403 insufficient_scope` | The token lacks a scope in `gateway.auth.requiredScopes` |
 | `200` with a JSON-RPC error `denied by policy` (`403` before `1.0.0-beta.4`, and for requests that are not JSON-RPC) | The tool authorization policy denied the call |
 | `400` | A token in the query string, or a request that is not well-formed MCP Streamable HTTP (unsupported `MCP-Protocol-Version`, a batch, or headers that disagree with the body); the body says which |
+| `413` | The request body is larger than `gateway.config.maxRequestBytes` (4 MiB by default); the message names the value to raise |
 | `503 authorization server keys unavailable` | The Gateway cannot load the issuer's signing keys |
 
 ## `kubectl apply` rejects the endpoint

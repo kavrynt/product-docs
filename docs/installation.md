@@ -1,6 +1,6 @@
 # Install on Kubernetes
 
-Install Kavrynt `1.0.0-beta.4` on any conformant Kubernetes cluster: AKS, EKS,
+Install Kavrynt `1.0.0-beta.5` on any conformant Kubernetes cluster: AKS, EKS,
 GKE, OpenShift, self-managed, or a local cluster. For a guided trial, use the
 [Quickstart](quickstart.md) or the [testing runbook](testing.md).
 
@@ -26,9 +26,9 @@ helm version --short
 
 | Artifact | Reference |
 | --- | --- |
-| Helm chart | `oci://registry-1.docker.io/kavrynt/kavrynt` (or `oci://ghcr.io/kavrynt/charts/kavrynt`) version `1.0.0-beta.4` |
-| Gateway image | `docker.io/kavrynt/gateway:1.0.0-beta.4` (also `ghcr.io/kavrynt/gateway`) |
-| Operator image | `docker.io/kavrynt/operator:1.0.0-beta.4` (also `ghcr.io/kavrynt/operator`) |
+| Helm chart | `oci://registry-1.docker.io/kavrynt/kavrynt` (or `oci://ghcr.io/kavrynt/charts/kavrynt`) version `1.0.0-beta.5` |
+| Gateway image | `docker.io/kavrynt/gateway:1.0.0-beta.5` (also `ghcr.io/kavrynt/gateway`) |
+| Operator image | `docker.io/kavrynt/operator:1.0.0-beta.5` (also `ghcr.io/kavrynt/operator`) |
 
 Images are multi-architecture (`linux/amd64`, `linux/arm64`), distroless, run
 as non-root, and are signed with Sigstore Cosign (keyless). Verify a signature
@@ -37,9 +37,9 @@ with [Cosign](https://docs.sigstore.dev/cosign/system_config/installation/)
 
 ```bash
 cosign verify \
-  --certificate-identity "https://github.com/kavrynt/kavrynt/.github/workflows/release.yml@refs/tags/v1.0.0-beta.4" \
+  --certificate-identity "https://github.com/kavrynt/kavrynt/.github/workflows/release.yml@refs/tags/v1.0.0-beta.5" \
   --certificate-oidc-issuer https://token.actions.githubusercontent.com \
-  docker.io/kavrynt/gateway:1.0.0-beta.4
+  docker.io/kavrynt/gateway:1.0.0-beta.5
 ```
 
 ## Install
@@ -50,7 +50,7 @@ your authorization server or opt out.
 === "With your authorization server"
 
     ```bash
-    export KAVRYNT_VERSION=1.0.0-beta.4
+    export KAVRYNT_VERSION=1.0.0-beta.5
 
     helm upgrade --install kavrynt oci://registry-1.docker.io/kavrynt/kavrynt \
       --version "$KAVRYNT_VERSION" \
@@ -124,6 +124,7 @@ schema and rejects unknown keys.
 | `gateway.config.allowedOrigins` | `[]` | Browser origins allowed besides loopback, for example an Ingress serving the console |
 | `gateway.config.stripRequestHeaders` | `[]` | Extra request headers never forwarded. `Authorization`, `Cookie`, and `Proxy-Authorization` are always removed |
 | `gateway.config.requestTimeout` | `30s` | Upstream request timeout |
+| `gateway.config.maxRequestBytes` | `4194304` (4 MiB) | Largest request body an MCP route accepts; larger requests get `413` |
 | `gateway.replicaCount`, `operator.replicaCount` | `1`, `1` | Replicas; see [High availability](operations.md#high-availability) |
 | `networkPolicy.mcpServers.enabled`, `networkPolicy.gateway.enabled` | `false` | Keep MCP traffic on the Gateway; see [Security](security.md#keeping-traffic-on-the-gateway) |
 | `gateway.metrics.serviceMonitor.enabled`, `operator.metrics.serviceMonitor.enabled` | `false` | Prometheus Operator `ServiceMonitor`s |
@@ -174,7 +175,7 @@ and report every server that is no longer routed afterwards. See
    either, the upgrade stops before changing anything.
 2. **Let the release adopt the CRD, once.** These releases installed it
    outside Helm's control. Run
-   `kavryctl upgrade --version 1.0.0-beta.4 --adopt-crd`, or adopt it by hand
+   `kavryctl upgrade --version 1.0.0-beta.5 --adopt-crd`, or adopt it by hand
    and then run the `helm upgrade` above:
 
     ```bash

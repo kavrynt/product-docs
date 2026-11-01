@@ -79,6 +79,13 @@ without reaching the server:
 
 Set `gateway.config.strictProtocol=false` to let clients migrate.
 
+**Request size.** A request body may be at most
+`gateway.config.maxRequestBytes` (4 MiB by default). A larger
+`Content-Length` gets `413` before anything reaches the MCP server; a body
+without a length is forwarded up to the limit and then cut with `413`. With
+the tool authorization policy on, a `POST` body without a length that is too
+large to read (over 1 MiB) is refused with `400` first.
+
 ## Tool authorization policy
 
 Open Policy Agent, embedded in the Gateway, evaluates your Rego policy before
@@ -89,7 +96,7 @@ evaluation over 100 ms.
 
 ```bash
 kubectl -n kavrynt-system create configmap kavrynt-policy --from-file=authz.rego
-helm upgrade kavrynt oci://registry-1.docker.io/kavrynt/kavrynt --version 1.0.0-beta.4 \
+helm upgrade kavrynt oci://registry-1.docker.io/kavrynt/kavrynt --version 1.0.0-beta.5 \
   -n kavrynt-system --reset-then-reuse-values \
   --set gateway.policy.enabled=true --set gateway.policy.configMap=kavrynt-policy
 ```
@@ -251,6 +258,15 @@ The Gateway forwards only `POST`, `GET`, and `DELETE`, to the route's own
 path. A server that serves other paths below its endpoint needs
 `spec.forwardSubpaths: true`.
 
+**Limitation.** Endpoint scope judges an endpoint by its host name. A
+Service in the server's own namespace that forwards elsewhere passes it: an
+`ExternalName` Service whose name points at another namespace, or a Service
+without a selector whose EndpointSlices list another namespace's pods. Until
+the Operator follows such Services, keep namespace owners from creating
+`ExternalName` Services and EndpointSlices (with RBAC or an admission
+policy), or limit where the Gateway may connect with an egress
+NetworkPolicy.
+
 ## Keeping traffic on the Gateway
 
 All of the above is skipped by a client that calls an MCP server's Service
@@ -287,6 +303,10 @@ provider instead of the shared password, and only the subjects in
   origin to `gateway.config.allowedOrigins`.
 
 There are no roles within the console.
+
+Sessions are signed cookies, not stored by the Gateway, so **Log out**
+removes the cookie from that browser only; a copy keeps working until it
+expires (12 hours). Changing the console password ends every session.
 
 Failed logins are limited per client. Behind an Ingress or load balancer,
 set `gateway.console.auth.trustedProxies` to the proxies' CIDRs, so failures

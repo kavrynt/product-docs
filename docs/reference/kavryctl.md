@@ -8,15 +8,15 @@ can register servers with `kubectl` alone instead.
 
 Each release publishes `kavryctl` for Linux, macOS, and Windows (amd64 and
 arm64) on the
-[GitHub release page](https://github.com/kavrynt/kavrynt/releases/tag/v1.0.0-beta.4),
+[GitHub release page](https://github.com/kavrynt/kavrynt/releases/tag/v1.0.0-beta.5),
 with a `SHA256SUMS` file signed with Cosign.
 
 On Linux or macOS, the install script downloads the binary for your platform,
 verifies its checksum, and installs it to `~/.kavrynt/bin`:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/kavrynt/kavrynt/v1.0.0-beta.4/scripts/install.sh \
-  | KAVRYNT_VERSION=v1.0.0-beta.4 sh
+curl -fsSL https://raw.githubusercontent.com/kavrynt/kavrynt/v1.0.0-beta.5/scripts/install.sh \
+  | KAVRYNT_VERSION=v1.0.0-beta.5 sh
 export PATH="$HOME/.kavrynt/bin:$PATH"
 kavryctl version
 ```
@@ -24,7 +24,7 @@ kavryctl version
 To verify by hand instead, download the archive and checksums, then check both:
 
 ```bash
-VERSION=1.0.0-beta.4
+VERSION=1.0.0-beta.5
 BASE=https://github.com/kavrynt/kavrynt/releases/download/v${VERSION}
 ARCHIVE=kavryctl_${VERSION}_linux_amd64.tar.gz   # or darwin_arm64, linux_arm64, ...
 curl -fsSL -O "$BASE/$ARCHIVE" -O "$BASE/SHA256SUMS" -O "$BASE/SHA256SUMS.sigstore.json"
@@ -57,7 +57,7 @@ kavryctl doctor [--anonymize]               # read-only installation check
 kavryctl export -A -o mcpservers.yaml       # registrations as manifests
 kavryctl import [--dry-run] mcpservers.yaml # checked restore
 kavryctl audit verify gateway.log           # or read standard input
-kavryctl upgrade --version 1.0.0-beta.4     # checked helm upgrade
+kavryctl upgrade --version 1.0.0-beta.5     # checked helm upgrade
 kavryctl rollback [--revision N]            # checked helm rollback
 ```
 
