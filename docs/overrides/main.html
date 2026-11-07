@@ -9,4 +9,17 @@
       }
     } catch (error) {}
   </script>
+  {#- "Ask AI" chat widget (Kapa.ai), only once extra.ask_ai.website_id is set. -#}
+  {% set ask_ai = config.extra.ask_ai %}
+  {% if ask_ai and ask_ai.website_id %}
+    <script async src="https://widget.kapa.ai/kapa-widget.bundle.js"
+      data-website-id="{{ ask_ai.website_id }}"
+      data-project-name="Kavrynt"
+      data-project-color="#5b3bd6"
+      data-project-logo="{{ config.site_url }}assets/images/kavrynt-mark.svg"
+      data-button-text="Ask AI"
+      data-modal-title="Ask AI about Kavrynt"
+      data-modal-disclaimer="Answers are generated from the Kavrynt docs and can be wrong. Check commands before you run them against a cluster."
+      {%- if ask_ai.example_questions %} data-modal-example-questions="{{ ask_ai.example_questions | join(',') | e }}"{% endif %}></script>
+  {% endif %}
 {% endblock %}

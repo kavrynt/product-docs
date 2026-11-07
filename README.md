@@ -44,9 +44,16 @@ The workflow:
 ## Site Features
 
 - Light, dark, and system themes from the header toggle.
-- Header links (Home, GitHub, Discord) and the footer's Community column come
-  from `extra.header_links` in `mkdocs.yml`. A link with an empty `url` is
-  hidden; set the Discord invite URL there to show it.
+- Top-level `nav` entries in `mkdocs.yml` are the header tabs.
+- The header shows the `kavrynt/kavrynt` repository (latest release, stars,
+  forks) from `repo_url`, then icon links from `extra.header_links`. A link
+  with an empty `url` is hidden; `header: false` keeps a link in the footer's
+  Community column only. Set the Discord invite URL there to show it.
+- "Ask AI" (Kapa.ai) loads only when `extra.ask_ai.website_id` is set. Create
+  a Kapa project, add the docs site as a source, allow the docs domain (and
+  `127.0.0.1` for local preview), and paste the website ID.
+- Moved pages keep their old URLs through `mkdocs-redirects`
+  (`plugins.redirects.redirect_maps`).
 - The navigation sidebar collapses on wide screens with the button at its
   bottom (`docs/assets/javascripts/sidebar.js`).
 - `docs/overrides/partials/header.html` and `footer.html` are copies of the

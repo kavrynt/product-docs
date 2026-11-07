@@ -56,6 +56,14 @@ theme:
     text: IBM Plex Sans
     code: IBM Plex Mono
 
+# search is listed because naming any plugin replaces MkDocs' default list.
+plugins:
+  - search
+  - redirects:
+      redirect_maps:
+        # The CLI reference moved to its own tab.
+        reference/kavryctl.md: cli/index.md
+
 extra_css:
   - assets/stylesheets/extra.css
 
@@ -63,6 +71,18 @@ extra_javascript:
   - assets/javascripts/sidebar.js
 
 extra:
+  # "Ask AI" chat widget from Kapa.ai, answering from these docs. It is not
+  # loaded until website_id is set: create a project at kapa.ai, add
+  # https://docs.kavrynt.com as a source, allow the docs domain (and
+  # 127.0.0.1 for local preview) in the Kapa dashboard, then paste the
+  # project's website ID here.
+  ask_ai:
+    website_id: ""
+    example_questions:
+      - How do I register an MCP server?
+      - How does the Gateway authenticate MCP clients?
+      - How do I verify the audit log?
+
   # Header (desktop) and footer links. A link with an empty url is hidden.
   # The header shows these as icons; header: false keeps a link in the footer
   # only (GitHub already appears in the header as the repository widget).
@@ -117,8 +137,14 @@ nav:
       - Gateway: components/gateway.md
       - Operator: components/operator.md
       - kavryctl: components/kavryctl.md
+  - CLI Reference:
+      - Overview: cli/index.md
+      - Manage servers: cli/servers.md
+      - kavryctl doctor: cli/doctor.md
+      - kavryctl export and import: cli/export-import.md
+      - kavryctl audit verify: cli/audit-verify.md
+      - kavryctl upgrade and rollback: cli/upgrade-rollback.md
   - Reference:
       - MCPServer Resource: reference/mcpserver.md
-      - kavryctl CLI: reference/kavryctl.md
       - Troubleshooting: troubleshooting.md
       - Release Notes: release-notes.md

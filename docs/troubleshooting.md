@@ -4,7 +4,7 @@
 
 Start with `kavryctl doctor`: it checks the CRD, the Gateway and Operator,
 their versions, client authentication, and every `MCPServer`, and says what
-to fix for each problem. See [doctor](reference/kavryctl.md#doctor).
+to fix for each problem. See [`kavryctl doctor`](cli/doctor.md).
 
 ```bash
 kavryctl doctor
