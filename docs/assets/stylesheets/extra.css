@@ -1,114 +1,355 @@
-/* Brand colours for both schemes (palette primary and accent are "custom").
-   Light mode uses darker oranges so links and active navigation keep at least
-   4.5:1 contrast on white. */
+/* Kavrynt docs theme.
+
+   Colours come from the logo: the indigo-black of its background for the
+   header, tabs, and footer ("chrome", the same in both schemes), its cyan bar
+   and violet chevrons for accents. Link colours keep at least 4.5:1 contrast
+   on their scheme's background. */
 :root {
-  --md-primary-fg-color: #e95420;
-  --md-primary-fg-color--light: #ff8a1f;
-  --md-primary-fg-color--dark: #9f1239;
+  --kv-chrome: #0a0b1a;
+  --kv-chrome-raised: #15172b;
+  --kv-chrome-line: rgba(255, 255, 255, 0.08);
+  --kv-chrome-fg: #e7e8f2;
+  --kv-chrome-fg-muted: #a2a5bd;
+  --kv-cyan: #22a3dc;
+  --kv-violet: #7c4dff;
+
+  --md-primary-fg-color: #5b3bd6;
+  --md-primary-fg-color--light: #7c4dff;
+  --md-primary-fg-color--dark: #4527a0;
   --md-primary-bg-color: #ffffff;
   --md-primary-bg-color--light: rgba(255, 255, 255, 0.7);
 }
 
 [data-md-color-scheme="default"] {
-  --md-accent-fg-color: #c2410c;
-  --md-accent-fg-color--transparent: rgba(194, 65, 12, 0.1);
-  --md-typeset-a-color: #c2410c;
-  --kv-link-color: #c2410c;
+  --md-accent-fg-color: #5b3bd6;
+  --md-accent-fg-color--transparent: rgba(91, 59, 214, 0.1);
+  --md-typeset-a-color: #5b3bd6;
+  --kv-link-color: #5b3bd6;
+  --kv-heading-color: #14152b;
+  --kv-button-fg: #ffffff;
 }
 
 [data-md-color-scheme="slate"] {
-  --md-accent-fg-color: #ff8a1f;
-  --md-accent-fg-color--transparent: rgba(255, 138, 31, 0.1);
-  --md-typeset-a-color: #ff9c34;
-  --kv-link-color: #ff9c34;
+  --md-hue: 236;
+  --md-default-bg-color: #12142a;
+  --md-code-bg-color: #1a1d36;
+  --md-primary-fg-color: #8f7dff;
+  --md-accent-fg-color: #8fc9ff;
+  --md-accent-fg-color--transparent: rgba(143, 201, 255, 0.1);
+  --md-typeset-a-color: #8fc9ff;
+  --kv-link-color: #8fc9ff;
+  --kv-heading-color: #f1f2fb;
+  --kv-button-fg: #ffffff;
 }
 
+/* ---------- Header and tabs ---------- */
+
 .md-header,
-.md-tabs {
-  background: linear-gradient(90deg, #9f1239, #e95420, #ff8a1f);
+.md-tabs,
+.md-nav--primary .md-nav__title[for="__drawer"] {
+  background-color: var(--kv-chrome);
+  color: var(--kv-chrome-fg);
+}
+
+.md-header {
+  border-bottom: 1px solid var(--kv-chrome-line);
+}
+
+.md-header--shadow {
+  box-shadow: none;
 }
 
 .md-header__button.md-logo {
-  margin: 0.2rem 0.35rem 0.2rem 0;
-  padding: 0.15rem;
+  margin: 0.2rem 0.2rem 0.2rem 0;
+  padding: 0.2rem;
 }
 
 .md-header__button.md-logo img,
 .md-header__button.md-logo svg {
-  width: 2rem;
-  height: 2rem;
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  border-radius: 7px;
-  background: #080a10;
+  width: auto;
+  height: 1.6rem;
 }
 
-/* Keep repository access in the footer without crowding the search header. */
+.md-header__title {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+/* Search sits in the middle of the header, wider than Material's default. */
+.md-search__form {
+  border-radius: 6px;
+  background-color: var(--kv-chrome-raised);
+}
+
+.md-search__form:hover {
+  background-color: #1d2038;
+}
+
+@media screen and (min-width: 76.25em) {
+  .md-search__inner {
+    width: 15rem;
+  }
+
+  [data-md-toggle="search"]:checked ~ .md-header .md-search__inner {
+    width: 30rem;
+  }
+}
+
+/* Repository widget: latest release, stars, and forks (repo_url). */
 .md-header__source {
-  display: none;
+  width: 12.5rem;
+  max-width: 12.5rem;
+  margin-left: 1rem;
+}
+
+.md-source {
+  font-size: 0.6rem;
+}
+
+.md-source__facts {
+  opacity: 0.85;
+}
+
+/* Icon links after the repository widget (partials/header.html). */
+.kv-header-links {
+  display: flex;
+  align-items: center;
+  gap: 0.1rem;
+  margin-left: 0.4rem;
+}
+
+.kv-header-link {
+  display: inline-flex;
+  padding: 0.4rem;
+  border-radius: 6px;
+  color: var(--kv-chrome-fg);
+}
+
+.kv-header-link svg {
+  display: block;
+  width: 1.1rem;
+  height: 1.1rem;
+  fill: currentcolor;
+}
+
+.kv-header-link:hover,
+.kv-header-link:focus-visible {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+@media screen and (max-width: 59.984375em) {
+  .kv-header-links {
+    display: none;
+  }
+}
+
+/* Tabs: one row of sections under the header. */
+.md-tabs {
+  border-bottom: 1px solid var(--kv-chrome-line);
+}
+
+.md-tabs__list {
+  margin-left: 0.2rem;
+}
+
+.md-tabs__item {
+  height: 2.6rem;
+  padding: 0 0.8rem;
+}
+
+.md-tabs__item:first-child {
+  padding-left: 0;
+}
+
+.md-tabs__link {
+  margin-top: 0.75rem;
+  color: var(--kv-chrome-fg-muted);
+  font-size: 0.78rem;
+  opacity: 1;
+}
+
+.md-tabs__link:hover,
+.md-tabs__link:focus-visible {
+  color: #ffffff;
+}
+
+.md-tabs__item--active .md-tabs__link {
+  color: #ffffff;
+}
+
+/* The active tab is marked by a cyan rule along the bottom of the bar. */
+.md-tabs__item--active {
+  box-shadow: inset 0 -2px 0 var(--kv-cyan);
+}
+
+/* ---------- Type ---------- */
+
+.md-typeset h1 {
+  margin-bottom: 1.2rem;
+  color: var(--kv-heading-color);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+.md-typeset h2 {
+  color: var(--kv-heading-color);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+.md-typeset h3 {
+  font-weight: 600;
 }
 
 .md-typeset a {
   color: var(--kv-link-color);
 }
 
-/* Header links: Home, GitHub, Discord (partials/header.html). */
-.kv-header-links {
-  display: flex;
-  align-items: center;
-  gap: 0.15rem;
-  margin-left: auto;
+.md-typeset code {
+  border-radius: 4px;
 }
 
-.kv-header-link {
+/* ---------- Buttons ---------- */
+
+.md-typeset .md-button {
+  padding: 0.55em 1.4em;
+  border: 1px solid var(--md-default-fg-color--lighter);
+  border-radius: 6px;
+  color: var(--md-default-fg-color);
+  font-weight: 600;
+}
+
+.md-typeset .md-button:hover,
+.md-typeset .md-button:focus-visible {
+  border-color: var(--kv-link-color);
+  background: transparent;
+  color: var(--kv-link-color);
+}
+
+.md-typeset .md-button--primary,
+.md-typeset .md-button--primary:hover,
+.md-typeset .md-button--primary:focus-visible {
+  border-color: #5b3bd6;
+  background: #5b3bd6;
+  color: var(--kv-button-fg);
+}
+
+.md-typeset .md-button--primary:hover,
+.md-typeset .md-button--primary:focus-visible {
+  border-color: #4527a0;
+  background: #4527a0;
+}
+
+/* ---------- Home page hero (index.md) ---------- */
+
+/* The home page hides both sidebars; keep its text at a readable width.
+   Narrower screens keep Material's own side gutters. */
+@media screen and (min-width: 50em) {
+  .md-content__inner:has(.kv-hero) {
+    max-width: 46rem;
+    margin-right: auto;
+    margin-left: auto;
+  }
+}
+
+.md-typeset .kv-hero {
+  margin: 1.5rem 0 2.8rem;
+  text-align: center;
+}
+
+.md-typeset .kv-hero__lockup {
   display: inline-flex;
   align-items: center;
-  gap: 0.3rem;
-  padding: 0.3rem 0.5rem;
-  border-radius: 6px;
-  color: var(--md-primary-bg-color);
+  gap: 1.1rem;
+}
+
+.md-typeset .kv-hero__mark {
+  width: 5.6rem;
+  height: auto;
+}
+
+.md-typeset .kv-hero__title {
+  margin: 0;
+  color: var(--kv-heading-color);
+  font-size: 4.6rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.045em;
+}
+
+.md-typeset .kv-hero__tagline {
+  margin: 1.4rem 0 1.6rem;
+  color: var(--md-default-fg-color--light);
+  font-size: 1.05rem;
+  font-weight: 500;
+}
+
+.md-typeset .kv-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
+  margin: 0;
+}
+
+.md-typeset .kv-hero__actions .md-button {
+  margin: 0;
+}
+
+.md-typeset .kv-hero__release {
+  margin: 1.2rem 0 0;
+  color: var(--md-default-fg-color--light);
   font-size: 0.7rem;
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-.kv-header-link:hover,
-.kv-header-link:focus-visible {
-  background: rgba(255, 255, 255, 0.14);
-  color: var(--md-primary-bg-color);
-}
-
-.kv-header-link svg {
-  display: block;
-  fill: currentcolor;
-}
-
-.kv-header-link__icon svg {
-  width: 0.9rem;
-  height: 0.9rem;
-}
-
-.kv-header-link__external svg {
-  width: 0.6rem;
-  height: 0.6rem;
-  opacity: 0.8;
-}
-
-/* Medium screens: icons only. Phones: links move to the footer. */
-@media screen and (max-width: 76.234375em) {
-  .kv-header-link__text,
-  .kv-header-link__external {
-    display: none;
-  }
 }
 
 @media screen and (max-width: 44.984375em) {
-  .kv-header-links {
-    display: none;
+  .md-typeset .kv-hero__mark {
+    width: 3.4rem;
+  }
+
+  .md-typeset .kv-hero__title {
+    font-size: 2.9rem;
+  }
+
+  .md-typeset .kv-hero__tagline {
+    font-size: 0.9rem;
   }
 }
 
-/* Collapsible navigation sidebar (assets/javascripts/sidebar.js). Only on
-   wide screens, where the sidebar is not a drawer. */
+/* ---------- Content blocks ---------- */
+
+.md-typeset .grid.cards > ul > li,
+.md-typeset .grid.cards > ol > li {
+  border-radius: 8px;
+}
+
+.md-typeset .grid.cards > ul > li:hover,
+.md-typeset .grid.cards > ol > li:hover {
+  border-color: var(--md-default-fg-color--lighter);
+  box-shadow: none;
+}
+
+.architecture-diagram {
+  margin: 1.5rem 0 2rem;
+}
+
+.architecture-diagram img {
+  display: block;
+  width: 100%;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 10px;
+}
+
+.architecture-diagram figcaption {
+  margin-top: 0.65rem;
+  color: var(--md-default-fg-color--light);
+  font-size: 0.72rem;
+  text-align: center;
+}
+
+/* ---------- Collapsible navigation sidebar (assets/javascripts/sidebar.js) ----------
+   Only on wide screens, where the sidebar is not a drawer. */
 .kv-sidebar-toggle {
   display: none;
 }
@@ -163,48 +404,16 @@
   }
 }
 
-.md-typeset .md-button {
-  border-radius: 6px;
-}
-
-.md-typeset .md-button--primary {
-  background: linear-gradient(135deg, #e11d48, #ff8a1f);
-  border-color: #ff8a1f;
-  color: #101014;
-}
-
-.md-typeset code {
-  border-radius: 5px;
-}
-
-.architecture-diagram {
-  margin: 1.5rem 0 2rem;
-}
-
-.architecture-diagram img {
-  display: block;
-  width: 100%;
-  border: 1px solid rgba(255, 138, 31, 0.28);
-  border-radius: 14px;
-  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.24);
-}
-
-.architecture-diagram figcaption {
-  margin-top: 0.65rem;
-  color: var(--md-default-fg-color--light);
-  font-size: 0.72rem;
-  text-align: center;
-}
-
-/* Previous/next links sit directly above the Kavrynt footer in one colour. */
+/* ---------- Footer ----------
+   Previous/next links sit directly above the Kavrynt footer in one colour. */
 .md-footer {
-  background-color: #14161d;
+  background-color: var(--kv-chrome);
 }
 
 .kv-footer {
-  background: #14161d;
-  border-top: 1px solid rgba(255, 138, 31, 0.25);
-  color: #d7dae2;
+  border-top: 1px solid var(--kv-chrome-line);
+  background: var(--kv-chrome);
+  color: var(--kv-chrome-fg);
 }
 
 .kv-footer__inner {
@@ -216,7 +425,7 @@
 
 .kv-footer__brand {
   margin: 0 0 0.55rem;
-  color: #fff;
+  color: #ffffff;
   font-size: 1.05rem;
   font-weight: 700;
 }
@@ -224,17 +433,16 @@
 .kv-footer__summary {
   max-width: 28rem;
   margin: 0;
-  color: #aeb4c0;
+  color: var(--kv-chrome-fg-muted);
   font-size: 0.72rem;
   line-height: 1.65;
 }
 
 .kv-footer__heading {
   margin: 0 0 0.7rem;
-  color: #fff;
+  color: #ffffff;
   font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
+  font-weight: 600;
 }
 
 .kv-footer__links {
@@ -243,18 +451,19 @@
 }
 
 .kv-footer__links a {
-  color: #bec3ce;
+  color: var(--kv-chrome-fg-muted);
   font-size: 0.68rem;
 }
 
-.kv-footer__links a:hover {
-  color: #ff9c34;
+.kv-footer__links a:hover,
+.kv-footer__links a:focus-visible {
+  color: #8fc9ff;
 }
 
 .kv-footer__bottom {
   padding: 1rem 0 1.25rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  color: #8f96a3;
+  border-top: 1px solid var(--kv-chrome-line);
+  color: #8a8da6;
   font-size: 0.62rem;
 }
 
@@ -271,7 +480,6 @@
     padding-left: 0.8rem;
   }
 }
-
 
 @media screen and (min-width: 45em) and (max-width: 59.984375em) {
   .kv-footer__inner {

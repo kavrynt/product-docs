@@ -164,4 +164,4 @@ kavryctl import mcpservers.yaml
 
 Export leaves out status and Secrets, and redacts `spec.environment` values
 and `spec.args` unless you ask for them. Import checks every document before
-it writes any. See [export and import](reference/kavryctl.md#export-and-import).
+it writes any. See [export and import](cli/export-import.md).

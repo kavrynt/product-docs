@@ -108,10 +108,10 @@ rewritten where it was written. See [Audit events](security.md#audit-events).
 
 ## Built for day two
 
-- [`kavryctl doctor`](reference/kavryctl.md#doctor) checks an installation
+- [`kavryctl doctor`](cli/doctor.md) checks an installation
   and says what to fix; `--anonymize` makes the report safe for a public
   issue.
-- [`kavryctl export` and `import`](reference/kavryctl.md#export-and-import)
+- [`kavryctl export` and `import`](cli/export-import.md)
   move registrations to a rebuilt cluster, with secrets redacted.
 - `kavryctl upgrade` and `rollback` check the release before they change it
   and report every server that is no longer routed afterwards.

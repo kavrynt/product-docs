@@ -2,13 +2,22 @@ site_name: Kavrynt Docs
 site_url: https://docs.kavrynt.com
 site_description: Documentation for Kavrynt, a Kubernetes-native MCP control plane.
 
+# The header shows this repository with its latest release, stars, and forks.
+repo_url: https://github.com/kavrynt/kavrynt
+repo_name: kavrynt/kavrynt
+# Pages are edited in this docs repository, not the runtime repository.
+edit_uri: https://github.com/kavrynt/product-docs/edit/main/docs/
+
 theme:
   name: material
   custom_dir: docs/overrides
-  logo: assets/images/Kavrynt_logo.svg
+  logo: assets/images/kavrynt-mark.svg
   favicon: assets/images/Kavrynt_logo.svg
   language: en
+  icon:
+    edit: material/file-edit-outline
   features:
+    - navigation.tabs
     - navigation.sections
     - navigation.instant
     - navigation.tracking
@@ -17,6 +26,7 @@ theme:
     - navigation.top
     - toc.follow
     - content.code.copy
+    - content.action.edit
     - content.tabs.link
     - search.suggest
     - search.highlight
@@ -43,8 +53,16 @@ theme:
         icon: material/weather-night
         name: Switch to system theme
   font:
-    text: Inter
-    code: Roboto Mono
+    text: IBM Plex Sans
+    code: IBM Plex Mono
+
+# search is listed because naming any plugin replaces MkDocs' default list.
+plugins:
+  - search
+  - redirects:
+      redirect_maps:
+        # The CLI reference moved to its own tab.
+        reference/kavryctl.md: cli/index.md
 
 extra_css:
   - assets/stylesheets/extra.css
@@ -53,7 +71,21 @@ extra_javascript:
   - assets/javascripts/sidebar.js
 
 extra:
+  # "Ask AI" chat widget from Kapa.ai, answering from these docs. It is not
+  # loaded until website_id is set: create a project at kapa.ai, add
+  # https://docs.kavrynt.com as a source, allow the docs domain (and
+  # 127.0.0.1 for local preview) in the Kapa dashboard, then paste the
+  # project's website ID here.
+  ask_ai:
+    website_id: ""
+    example_questions:
+      - How do I register an MCP server?
+      - How does the Gateway authenticate MCP clients?
+      - How do I verify the audit log?
+
   # Header (desktop) and footer links. A link with an empty url is hidden.
+  # The header shows these as icons; header: false keeps a link in the footer
+  # only (GitHub already appears in the header as the repository widget).
   header_links:
     - name: Home
       url: https://kavrynt.com
@@ -62,6 +94,7 @@ extra:
       url: https://github.com/kavrynt/kavrynt
       icon: fontawesome/brands/github
       new_tab: true
+      header: false
     - name: Discord
       url: "" # set the Discord invite URL to show this link
       icon: fontawesome/brands/discord
@@ -85,25 +118,33 @@ markdown_extensions:
   - toc:
       permalink: true
 
+# Each top-level entry is a tab in the header.
 nav:
   - Home: index.md
-  - Overview: overview.md
-  - Why Kavrynt: why-kavrynt.md
   - Get Started:
+      - Overview: overview.md
+      - Why Kavrynt: why-kavrynt.md
       - Quickstart: quickstart.md
       - "Test Kavrynt: a runbook": testing.md
-      - Install on Kubernetes: installation.md
-  - Architecture:
+  - Concepts:
       - System Architecture: architecture.md
       - MCP Concepts: concepts/mcp.md
-  - Security: security.md
-  - Operations: operations.md
+  - Production:
+      - Install on Kubernetes: installation.md
+      - Security: security.md
+      - Operations: operations.md
   - Components:
       - Gateway: components/gateway.md
       - Operator: components/operator.md
       - kavryctl: components/kavryctl.md
+  - CLI Reference:
+      - Overview: cli/index.md
+      - Manage servers: cli/servers.md
+      - kavryctl doctor: cli/doctor.md
+      - kavryctl export and import: cli/export-import.md
+      - kavryctl audit verify: cli/audit-verify.md
+      - kavryctl upgrade and rollback: cli/upgrade-rollback.md
   - Reference:
       - MCPServer Resource: reference/mcpserver.md
-      - kavryctl CLI: reference/kavryctl.md
       - Troubleshooting: troubleshooting.md
       - Release Notes: release-notes.md

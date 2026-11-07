@@ -1,12 +1,33 @@
-# Kavrynt Documentation
+---
+hide:
+  - navigation
+  - toc
+---
+
+<div class="kv-hero" markdown>
+<div class="kv-hero__lockup">
+  <img class="kv-hero__mark" src="assets/images/kavrynt-mark.svg" alt="">
+  <h1 class="kv-hero__title">Kavrynt</h1>
+</div>
+<p class="kv-hero__tagline">Register, secure, and route MCP servers on any Kubernetes cluster.</p>
+<p class="kv-hero__actions" markdown>
+[Quickstart](quickstart.md){ .md-button .md-button--primary }
+[Test Kavrynt](testing.md){ .md-button }
+[Why Kavrynt](why-kavrynt.md){ .md-button }
+</p>
+<p class="kv-hero__release" markdown>Latest release: [`1.0.0-beta.5`](release-notes.md)</p>
+</div>
 
 Kavrynt is a Kubernetes-native control plane for MCP infrastructure. It gives
 platform teams one consistent way to register, discover, secure, and route
 Model Context Protocol (MCP) servers for AI agents, on any Kubernetes cluster.
 
-[Quickstart](quickstart.md){ .md-button .md-button--primary }
-[Test Kavrynt](testing.md){ .md-button }
-[Why Kavrynt](why-kavrynt.md){ .md-button }
+Where to start depends on what you want to do:
+
+- Try Kavrynt on a local cluster: start with the [Quickstart](quickstart.md).
+- Evaluate it step by step: follow the [Test Kavrynt runbook](testing.md).
+- Run it in production: read [Install on Kubernetes](installation.md) and
+  [Security](security.md).
 
 ## What works today (`1.0.0-beta.5`)
 

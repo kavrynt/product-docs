@@ -11,4 +11,4 @@
 - verifies Gateway audit chains;
 - upgrades and rolls back the Kavrynt release, with checks before and after.
 
-Helm installs Kavrynt. See the [CLI reference](../reference/kavryctl.md).
+Helm installs Kavrynt. See the [CLI reference](../cli/index.md).

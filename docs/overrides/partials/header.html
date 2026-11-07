@@ -1,7 +1,7 @@
 {#-
-  Material 9.7.7 partials/header.html with Kavrynt header links (Home,
-  GitHub, Discord) before the theme toggle. Links come from
-  extra.header_links in mkdocs.yml; a link without a URL is not shown.
+  Material 9.7.7 partials/header.html with Kavrynt header links shown as
+  icons after the repository widget. Links come from extra.header_links in
+  mkdocs.yml; a link without a URL, or with header: false, is not shown.
   When upgrading Material, re-copy the partial and keep the marked block.
 -#}
 {% set class = "md-header" %}
@@ -37,24 +37,6 @@
         </div>
       </div>
     </div>
-    {#- Kavrynt: header links -#}
-    {% if config.extra.header_links %}
-      <div class="kv-header-links">
-        {% for link in config.extra.header_links if link.url %}
-          <a class="kv-header-link" href="{{ link.url }}" title="{{ link.name }}"
-            {%- if link.new_tab %} target="_blank" rel="noopener" aria-label="{{ link.name }} (opens in a new tab)"{% endif %}>
-            {% if link.icon %}
-              <span class="kv-header-link__icon">{% include ".icons/" ~ link.icon ~ ".svg" %}</span>
-            {% endif %}
-            <span class="kv-header-link__text">{{ link.name }}</span>
-            {% if link.new_tab %}
-              <span class="kv-header-link__external" aria-hidden="true">{% include ".icons/material/open-in-new.svg" %}</span>
-            {% endif %}
-          </a>
-        {% endfor %}
-      </div>
-    {% endif %}
-    {#- Kavrynt: end header links -#}
     {% if config.theme.palette %}
       {% if not config.theme.palette is mapping %}
         {% include "partials/palette.html" %}
@@ -81,6 +63,18 @@
         {% include "partials/source.html" %}
       </div>
     {% endif %}
+    {#- Kavrynt: header links, as icons after the repository widget. -#}
+    {% if config.extra.header_links %}
+      <div class="kv-header-links">
+        {% for link in config.extra.header_links if link.url and link.header is not false %}
+          <a class="kv-header-link" href="{{ link.url }}" title="{{ link.name }}" aria-label="{{ link.name }}{% if link.new_tab %} (opens in a new tab){% endif %}"
+            {%- if link.new_tab %} target="_blank" rel="noopener"{% endif %}>
+            {% include ".icons/" ~ (link.icon or "material/link-variant") ~ ".svg" %}
+          </a>
+        {% endfor %}
+      </div>
+    {% endif %}
+    {#- Kavrynt: end header links -#}
   </nav>
   {% if "navigation.tabs.sticky" in features %}
     {% if "navigation.tabs" in features %}
