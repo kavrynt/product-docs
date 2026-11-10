@@ -60,10 +60,12 @@ connection is still refused, the cluster is not running: check `docker ps`.
 
 ## 2. Install Kavrynt
 
-**Use an empty cluster.** The install below turns off MCP client
-authentication, and on a cluster that already runs Kavrynt it does that to the
-existing release. Step 8 also deletes what this runbook created, so it must be
-sure that all of it is yours. Check that nothing exists yet:
+**Use an empty cluster that only you use.** The install below turns off MCP
+client authentication, and on a cluster that already runs Kavrynt it does that
+to the existing release. Step 8 also deletes what this runbook created, so it
+must be sure that all of it is yours; on a shared cluster, other people can add
+servers or resources during the test, and cleanup would remove them too. Check
+that nothing exists yet:
 
 ```bash
 helm list -A
@@ -171,8 +173,8 @@ It also warns that MCP routes are not authenticated.
 
 ## Clean up
 
-Step 2 required an empty cluster, so everything below was created by this
-quickstart and is safe to remove. Stop the port-forward first, then remove
+Step 2 required an empty cluster that only you use, so everything below was
+created by this quickstart and is safe to remove. Stop the port-forward first, then remove
 Kavrynt and the namespaces, release first:
 
 ```bash
@@ -183,8 +185,8 @@ kubectl delete namespace kavrynt-system
 ```
 
 Helm keeps the `MCPServer` CRD on purpose. Deleting it removes every
-`MCPServer` in every namespace, so on a shared cluster list them first and
-keep the CRD if any of them is not yours:
+`MCPServer` in every namespace, and their registrations with them, so list them
+first and keep the CRD unless every one is disposable:
 
 ```bash
 kubectl get mcpservers -A        # every one of these goes with the CRD
