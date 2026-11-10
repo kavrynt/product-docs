@@ -265,23 +265,23 @@
 }
 
 .md-typeset .kv-hero__mark {
-  width: 5.6rem;
+  width: 4rem;
   height: auto;
 }
 
 .md-typeset .kv-hero__title {
   margin: 0;
   color: var(--kv-heading-color);
-  font-size: 4.6rem;
+  font-size: 3.2rem;
   font-weight: 700;
   line-height: 1;
-  letter-spacing: -0.045em;
+  letter-spacing: -0.04em;
 }
 
 .md-typeset .kv-hero__tagline {
-  margin: 1.4rem 0 1.6rem;
+  margin: 1.1rem 0 1.3rem;
   color: var(--md-default-fg-color--light);
-  font-size: 1.05rem;
+  font-size: 0.85rem;
   font-weight: 500;
 }
 
@@ -298,22 +298,35 @@
 }
 
 .md-typeset .kv-hero__release {
-  margin: 1.2rem 0 0;
+  margin: 1rem 0 0;
   color: var(--md-default-fg-color--light);
-  font-size: 0.7rem;
+  font-size: 0.62rem;
+}
+
+/* The rest of the home page reads one step smaller than other pages. */
+.md-typeset:has(.kv-hero) {
+  font-size: 0.72rem;
+}
+
+.md-typeset:has(.kv-hero) h2 {
+  font-size: 1.45em;
+}
+
+.md-typeset:has(.kv-hero) .md-button {
+  font-size: 0.72rem;
 }
 
 @media screen and (max-width: 44.984375em) {
   .md-typeset .kv-hero__mark {
-    width: 3.4rem;
+    width: 2.6rem;
   }
 
   .md-typeset .kv-hero__title {
-    font-size: 2.9rem;
+    font-size: 2.2rem;
   }
 
   .md-typeset .kv-hero__tagline {
-    font-size: 0.9rem;
+    font-size: 0.78rem;
   }
 }
 
