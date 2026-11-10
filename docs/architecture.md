@@ -5,31 +5,11 @@ Kavrynt separates desired state (Kubernetes resources) from runtime traffic
 
 ## Logical view
 
-```text
-             desired state                                runtime traffic
-  +------------------------------+
-  | kubectl / GitOps / kavryctl  |
-  +--------------+---------------+
-                 | MCPServer
-                 v
-  +------------------------------+   validate, status   +------------------+
-  | Kubernetes API server        |<---------------------| Kavrynt Operator |
-  | (CRD admission validation)   |   Accepted / Ready,  | (tool discovery) |
-  +--------------+---------------+   tools              +------------------+
-                 | watch (read-only)
-                 v
-  +------------------------------+   access token       +------------------+
-  | Kavrynt Gateway              |<---------------------| MCP client/agent |
-  | /mcp/<namespace>.<name>      |                      +------------------+
-  | authn, checks, policy, audit |------> your authorization server
-  +--------------+---------------+        (keys, token exchange)
-                 | HTTP, caller credentials removed,
-                 | server credential added
-                 v
-  +------------------------------+
-  | MCP server workloads         |
-  +------------------------------+
-```
+<figure class="architecture-diagram" markdown>
+  ![Kavrynt architecture: the Platform team registers MCPServer resources with the Kubernetes API server; the Operator validates them and discovers tools; the Gateway watches them, authenticates MCP clients against your authorization server, applies policy, writes audit events, and proxies traffic to MCP server workloads.](assets/diagrams/kavrynt-architecture.svg)
+  <figcaption>Kavrynt architecture. Open the editable
+  <a href="assets/diagrams/kavrynt-architecture.drawio">draw.io source</a>.</figcaption>
+</figure>
 
 ## Components
 

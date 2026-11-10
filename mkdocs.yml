@@ -148,3 +148,10 @@ nav:
       - MCPServer Resource: reference/mcpserver.md
       - Troubleshooting: troubleshooting.md
       - Release Notes: release-notes.md
+  - Community:
+      - Overview: community/index.md
+      - Contributing: community/contributing.md
+      - Governance and Maintainers: community/governance.md
+      - Code of Conduct: community/code-of-conduct.md
+      - Reporting Vulnerabilities: community/security-reporting.md
+      - Roadmap: community/roadmap.md
