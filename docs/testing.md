@@ -56,7 +56,31 @@ kubectl config current-context
 kubectl auth can-i create customresourcedefinitions   # expect: yes
 ```
 
+If `current-context` prints `error: current-context is not set`, or kubectl
+says `The connection to the server localhost:8080 was refused`, no cluster is
+selected. List your contexts with `kubectl config get-contexts` and select one
+with `kubectl config use-context <name>`. For a local Kind cluster that is
+running but missing from your kubeconfig, `kind export kubeconfig --name
+kavrynt-try` adds its context and selects it. If the context exists but the
+connection is still refused, the cluster is not running: check `docker ps`.
+
 ## 2. Install Kavrynt
+
+**Use an empty cluster.** The install below turns off MCP client
+authentication, and on a cluster that already runs Kavrynt it does that to the
+existing release. Step 8 also deletes what this runbook created, so it must be
+sure that all of it is yours. Check that nothing exists yet:
+
+```bash
+helm list -A
+kubectl get ns kavrynt-system kavrynt-try
+kubectl get crd mcpservers.kavrynt.io
+```
+
+`helm list` must show no release named `kavrynt`, and both `kubectl` commands
+must answer `NotFound`. If any of them finds something, stop and use another
+cluster: this runbook does not support installing into a cluster that already
+has Kavrynt, its namespaces, or its CRD.
 
 ```bash
 export KAVRYNT_VERSION=1.0.0-beta.5
@@ -150,6 +174,7 @@ one and use it in the commands below.
 
 ```bash
 kubectl -n kavrynt-system port-forward service/kavrynt-gateway 18080:8080 &
+PF_PIDS="$PF_PIDS $!"   # the cleanup step stops only these
 GW=http://127.0.0.1:18080/mcp/kavrynt-try.sample
 ```
 
@@ -271,9 +296,10 @@ answer `HTTP 403` with the same body.
 chained with SHA-256. Install `kavryctl` and verify the chain:
 
 ```bash
+KAVRYNT_TEST_DIR="$(mktemp -d "$HOME/.kavrynt-test.XXXXXX")"   # keep this variable until step 8
 curl -fsSL https://raw.githubusercontent.com/kavrynt/kavrynt/v1.0.0-beta.5/scripts/install.sh \
-  | KAVRYNT_VERSION=v1.0.0-beta.5 sh
-export PATH="$HOME/.kavrynt/bin:$PATH"
+  | KAVRYNT_VERSION=v1.0.0-beta.5 INSTALL_DIR="$KAVRYNT_TEST_DIR/bin" sh
+export PATH="$KAVRYNT_TEST_DIR/bin:$PATH"
 
 kubectl -n kavrynt-system logs -l app.kubernetes.io/name=gateway --prefix=false --tail=-1 \
   | kavryctl audit verify
@@ -325,16 +351,64 @@ server needs an API key, see `spec.credential` in the
 
 ## 8. Clean up
 
+Collect the diagnostics that [step 9](#9-tell-us-what-happened) asks for
+(`kavryctl doctor --anonymize`) before you clean up: it needs the install and
+`kavryctl` that this step removes.
+
+Step 2 required an empty cluster, so everything below was created by this
+runbook and is safe to remove. Stop the port-forwards from steps 4 and 6
+first:
+
 ```bash
-kill %1 2>/dev/null                    # the port-forward
-kubectl delete namespace kavrynt-try
-helm uninstall kavrynt -n kavrynt-system
-kubectl delete crd mcpservers.kavrynt.io   # Helm keeps it on purpose
-kubectl delete namespace kavrynt-system
+kill $PF_PIDS
 ```
 
-Or delete the whole local cluster, for example
-`kind delete cluster --name kavrynt-try`.
+If you registered your own server in step 7, delete it before anything else,
+by the name and namespace you used there:
+
+```bash
+kubectl get mcpservers -A
+kubectl delete mcpserver <name> -n <namespace>
+```
+
+Then remove Kavrynt and the namespaces, release first:
+
+```bash
+helm uninstall kavrynt -n kavrynt-system
+kubectl delete namespace kavrynt-try               # step 3
+kubectl delete namespace kavrynt-system            # also removes the kavrynt-policy ConfigMap
+```
+
+Helm keeps the `MCPServer` CRD on purpose, so delete it too. This removes every
+`MCPServer` in every namespace. The cluster was empty when you started, but
+someone else may have registered a server since (on a shared cluster), so list
+them first and keep the CRD if any of them is not yours:
+
+```bash
+kubectl get mcpservers -A        # every one of these goes with the CRD
+kubectl delete crd mcpservers.kavrynt.io
+```
+
+On your machine, also remove the policy file from step 6 (`authz.rego`, in the
+directory where you ran the command) and, if you installed it for the audit
+check, the test copy of `kavryctl` (`rm -r "$KAVRYNT_TEST_DIR"`, the directory
+step 6 created; if you closed that shell, it is the `~/.kavrynt-test.*`
+directory the installer printed) and the `PATH` line you added. A `kavryctl` you
+installed before this test, in the default `~/.kavrynt/bin`, is untouched.
+
+If you created a local cluster only for this test, delete it instead of the
+steps above:
+
+```bash
+kind delete cluster --name kavrynt-try   # or: k3d cluster delete kavrynt-try
+                                         #     minikube delete -p kavrynt-try
+kubectl config get-contexts              # confirm it is gone
+```
+
+Deleting the cluster that `kubectl` had selected leaves kubectl with no current
+context (`error: current-context is not set`). Select another one with
+`kubectl config use-context <name>`. Only delete a cluster you created for
+this test.
 
 ## 9. Tell us what happened
 
