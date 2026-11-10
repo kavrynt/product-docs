@@ -50,7 +50,33 @@ kubectl config current-context
 kubectl auth can-i create customresourcedefinitions   # expect: yes
 ```
 
+If `current-context` prints `error: current-context is not set`, or kubectl
+says `The connection to the server localhost:8080 was refused`, no cluster is
+selected. List your contexts with `kubectl config get-contexts` and select one
+with `kubectl config use-context <name>`. For a local Kind cluster that is
+running but missing from your kubeconfig, `kind export kubeconfig --name
+kavrynt-trial` adds its context and selects it. If the context exists but the
+connection is still refused, the cluster is not running: check `docker ps`.
+
 ## 2. Install Kavrynt
+
+**Use an empty cluster that only you use.** The install below turns off MCP
+client authentication, and on a cluster that already runs Kavrynt it does that
+to the existing release. Step 8 also deletes what this runbook created, so it
+must be sure that all of it is yours; on a shared cluster, other people can add
+servers or resources during the test, and cleanup would remove them too. Check
+that nothing exists yet:
+
+```bash
+helm list -A
+kubectl get ns kavrynt-system kavrynt-try
+kubectl get crd mcpservers.kavrynt.io
+```
+
+`helm list` must show no release named `kavrynt`, and both `kubectl` commands
+must answer `NotFound`. If any of them finds something, stop and use another
+cluster: this runbook does not support installing into a cluster that already
+has Kavrynt, its namespaces, or its CRD.
 
 ```bash
 export KAVRYNT_VERSION=1.0.0-beta.5
@@ -110,6 +136,7 @@ one.
 
 ```bash
 kubectl -n kavrynt-system port-forward service/kavrynt-gateway 18080:8080 &
+PF_PIDS="$PF_PIDS $!"   # the cleanup step stops only these
 GW=http://127.0.0.1:18080/mcp/kavrynt-try.sample
 
 curl -s -X POST "$GW" -H 'Content-Type: application/json' -H 'MCP-Protocol-Version: 2025-06-18' \
@@ -146,15 +173,29 @@ It also warns that MCP routes are not authenticated.
 
 ## Clean up
 
+Step 2 required an empty cluster that only you use, so everything below was
+created by this quickstart and is safe to remove. Stop the port-forward first, then remove
+Kavrynt and the namespaces, release first:
+
 ```bash
-kill %1 2>/dev/null                        # the port-forward
-kubectl delete namespace kavrynt-try
+kill $PF_PIDS
 helm uninstall kavrynt -n kavrynt-system
-kubectl delete crd mcpservers.kavrynt.io   # Helm keeps it on purpose
+kubectl delete namespace kavrynt-try
 kubectl delete namespace kavrynt-system
 ```
 
-Or delete the whole local cluster.
+Helm keeps the `MCPServer` CRD on purpose. Deleting it removes every
+`MCPServer` in every namespace, and their registrations with them, so list them
+first and keep the CRD unless every one is disposable:
+
+```bash
+kubectl get mcpservers -A        # every one of these goes with the CRD
+kubectl delete crd mcpservers.kavrynt.io
+```
+
+If you created a local cluster only for this, you can delete the whole cluster
+instead (for example `kind delete cluster --name kavrynt-try`), and only a
+cluster you created for this.
 
 ## Next steps
 
