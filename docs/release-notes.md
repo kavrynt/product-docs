@@ -64,7 +64,8 @@ reason. Other denied requests still get `403`.
 - The Gateway audience (`gateway.auth.gatewayAudience`): listed routes also
   accept one token for the whole Gateway, so an agent that calls many MCP
   servers needs one audience instead of one per route. Off by default.
-- `kavryctl list` in an empty namespace says which namespaces have servers.
+- `kavryctl list` in an empty namespace says how many servers other
+  namespaces have and points to `kavryctl list -A`.
 
 **Fixed**
 

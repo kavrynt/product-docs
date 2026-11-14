@@ -117,14 +117,14 @@ helm template kavrynt oci://registry-1.docker.io/kavrynt/kavrynt --version "$KAV
 
 ## 3. Register an MCP server
 
-[`sample-mcp-server.yaml`](https://github.com/kavrynt/kavrynt/blob/develop/examples/try/sample-mcp-server.yaml)
+[`sample-mcp-server.yaml`](https://github.com/kavrynt/kavrynt/blob/v1.0.0-beta.5/examples/try/sample-mcp-server.yaml)
 runs a small MCP server in a new `kavrynt-try` namespace, with two tools:
 `echo`, and `admin_reset`, a harmless stand-in for a dangerous tool. It runs
 on the public `python` image, so nothing needs building. The file also
 registers the server with Kavrynt as an `MCPServer`.
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/kavrynt/kavrynt/develop/examples/try/sample-mcp-server.yaml
+kubectl apply -f https://raw.githubusercontent.com/kavrynt/kavrynt/v1.0.0-beta.5/examples/try/sample-mcp-server.yaml
 kubectl -n kavrynt-try rollout status deployment/sample-mcp-server --timeout=180s
 kubectl -n kavrynt-try wait mcpserver/sample --for=condition=Ready --timeout=60s
 kubectl -n kavrynt-try wait mcpserver/sample --for=condition=ToolsDiscovered --timeout=120s

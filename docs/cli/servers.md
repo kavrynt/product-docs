@@ -42,7 +42,9 @@ team-a     local-tool  1.0.0    stdio      False  -                     NotRouta
   reason when it has not (such as `DiscoveryFailed` or `NotRoutable`), and
   `-` before the Operator has looked. See
   [`MCPServer` is not `Ready`](../troubleshooting.md#mcpserver-is-not-ready).
-- In an empty namespace, `list` says which namespaces have servers.
+- In an empty namespace, `list` says how many servers other namespaces
+  have and points to `kavryctl list -A`, for example
+  `no MCPServers found in namespace team-b; 2 in other namespaces: kavryctl list -A`.
 
 ## inspect
 
