@@ -55,7 +55,7 @@ says `The connection to the server localhost:8080 was refused`, no cluster is
 selected. List your contexts with `kubectl config get-contexts` and select one
 with `kubectl config use-context <name>`. For a local Kind cluster that is
 running but missing from your kubeconfig, `kind export kubeconfig --name
-kavrynt-trial` adds its context and selects it. If the context exists but the
+kavrynt-try` adds its context and selects it. If the context exists but the
 connection is still refused, the cluster is not running: check `docker ps`.
 
 ## 2. Install Kavrynt
@@ -106,7 +106,7 @@ namespace and registers it as an `MCPServer`. The server has two tools,
 on the public `python` image, so nothing needs building.
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/kavrynt/kavrynt/develop/examples/try/sample-mcp-server.yaml
+kubectl apply -f https://raw.githubusercontent.com/kavrynt/kavrynt/v1.0.0-beta.5/examples/try/sample-mcp-server.yaml
 kubectl -n kavrynt-try rollout status deployment/sample-mcp-server --timeout=180s
 kubectl -n kavrynt-try wait mcpserver/sample --for=condition=ToolsDiscovered --timeout=120s
 kubectl get mcpservers -A
